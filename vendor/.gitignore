@@ -2,4 +2,5 @@
 .composer
 composer
 zendframework
+ZF2
 autoload.php

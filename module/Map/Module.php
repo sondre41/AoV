@@ -1,8 +1,9 @@
 <?php
 
-namespace Application;
+namespace Map;
 
 use Zend\Mvc\ModuleRouteListener;
+use Map\Models\MapTable;
 
 class Module
 {
@@ -28,6 +29,19 @@ class Module
                 ),
             ),
         );
+    }
+    
+    public function getServiceConfig() {
+    	return array(
+    		'factories' => array(
+    			'Map\Models\MapTable' => function($serviceManager) {
+    				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+    				$mapTableModel = new MapTable($databaseAdapter);
+    				
+    				return $mapTableModel;
+    			}
+    		)
+    	);
     }
 }
 
