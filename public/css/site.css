@@ -1,0 +1,19 @@
+table.mapTable td {
+	width: 50px;
+	height: 50px;
+}
+table.mapTable td.plains {
+	background-image: url("../images/map/plains.jpg");
+}
+table.mapTable td.water {
+	background-image: url("../images/map/water.jpg");
+}
+table.mapTable td.forest {
+	background-image: url("../images/map/forest.jpg");
+}
+table.mapTable td.stone {
+	background-image: url("../images/map/stone.jpg");
+}
+table.mapTable td.gold {
+	background-image: url("../images/map/gold.jpg");
+}
