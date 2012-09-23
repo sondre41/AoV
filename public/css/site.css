@@ -1,6 +1,15 @@
+/* Map */
+table.mapTable {
+	border: 1px solid black;
+}
 table.mapTable td {
 	width: 50px;
 	height: 50px;
+	text-align: center;
+	vertical-align: middle;
+	border: 1px solid black;
+	border-bottom-width: 1px;
+	padding: 0px;
 }
 table.mapTable td.plains {
 	background-image: url("../images/map/plains.jpg");
@@ -16,4 +25,41 @@ table.mapTable td.stone {
 }
 table.mapTable td.gold {
 	background-image: url("../images/map/gold.jpg");
+}
+table.mapTable td.navigation {
+	border-width: 0px;
+}
+
+table.mapTable td a.changePosition {
+	display: block;
+	border: 0px solid black;
+	width: 100%;
+	height: 100%;
+}
+
+table.mapTable td img {
+	margin-top: 5px;
+}
+
+/* Forest */
+#forestSquareContainer {
+	width: 875px;
+	height: 750px;
+	background-image: url("../images/mapsquare/tree.jpg");
+	text-align: center;
+	border: 1px solid black;
+}
+#forestSquareContainer div.form {
+	margin: 320px auto 0px auto;
+	border: 1px solid red;
+	width: 25%;
+	background-color: green;
+	color: white;
+	opacity: 0.8;
+	filter: alpha(opacity=80);
+}
+#forestSquareContainer form #submit {
+	margin-top: 30px;
+	margin-bottom: 15px;
+	border: 1px solid red;
 }

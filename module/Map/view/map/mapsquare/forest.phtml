@@ -1,0 +1,26 @@
+<div id="forestSquareContainer">
+<div class="form">
+
+<?php
+if(!$this->blocked) {
+$url = $this->url('map', array(
+	'controller' => 'mapsquare',
+	'action' => 'index'
+));
+?>
+
+<form action="<?php echo $url; ?>" method="POST">
+	<input type="hidden" name="squareAction" value="forest">
+	<input type="submit" id="submit" name="submit" value="Hugg tre">
+</form>
+
+<?php
+
+} else {
+	echo "Du har nettop hugget et tre. Du må hvile i 3 minutter før du kan gjøre flere handlinger.";
+}
+
+?>
+
+</div>
+</div>

@@ -10,6 +10,9 @@ chdir(dirname(__DIR__));
 // Setup autoloading
 include 'init_autoloader.php';
 
+// Set timezone
+date_default_timezone_set('Europe/Oslo');
+
 // Run the application!
 Zend\Mvc\Application::init(include 'config/application.config.php')->run();
 

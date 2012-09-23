@@ -2,15 +2,15 @@
 
 namespace Map\Models;
 
-class MapSquare {
-	public $longitude;
-	public $latitude;
+class Item {
+	public $itemID;
 	public $type;
+	public $name;
 
 	public function exchangeArray($data) {
-		$this->longitude = (isset($data['longitude'])) ? $data['longitude'] : null;
-		$this->latitude = (isset($data['latitude'])) ? $data['latitude'] : null;
+		$this->itemID = (isset($data['itemID'])) ? $data['itemID'] : null;
 		$this->type = (isset($data['type'])) ? $data['type'] : null;
+		$this->name = (isset($data['name'])) ? $data['name'] : null;
 	}
 	
 	public function toArray() {

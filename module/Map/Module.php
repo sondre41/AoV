@@ -2,8 +2,13 @@
 
 namespace Map;
 
+use Map\Models\InventoryTable;
+
+use Map\Models\ItemTable;
+
 use Zend\Mvc\ModuleRouteListener;
 use Map\Models\MapTable;
+use Map\Models\PlayerTable;
 
 class Module
 {
@@ -36,9 +41,23 @@ class Module
     		'factories' => array(
     			'Map\Models\MapTable' => function($serviceManager) {
     				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
-    				$mapTableModel = new MapTable($databaseAdapter);
     				
-    				return $mapTableModel;
+    				return new MapTable($databaseAdapter);
+    			},
+    			'Map\Models\PlayerTable' => function($serviceManager) {
+    				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+    				
+    				return new PlayerTable($databaseAdapter);
+    			},
+    			'Map\Models\ItemTable' => function($serviceManager) {
+    				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+    				
+    				return new ItemTable($databaseAdapter);
+    			},
+    			'Map\Models\InventoryTable' => function($serviceManager) {
+    				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+    				
+    				return new InventoryTable($databaseAdapter);
     			}
     		)
     	);

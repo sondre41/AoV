@@ -1,23 +1,22 @@
 <?php
-/**
- * Zend Framework (http://framework.zend.com/)
- *
- * @link      http://github.com/zendframework/ZendSkeletonApplication for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
- */
 
 return array(
     'router' => array(
         'routes' => array(
             'map' => array(
-                'type'    => 'Literal',
+                'type'    => 'segment',
                 'options' => array(
-                    'route'    => '/map',
+                    'route'    => '/map[/:controller][/:action][/:longitude][/:latitude]',
+                	'constraints' => array(
+                		'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                		'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                		'longitude' => '[0-9]+',
+                		'latitude' => '[0-9]+'
+                	),
                     'defaults' => array(
                         '__NAMESPACE__' => 'Map\Controller',
                         'controller'    => 'Index',
-                        'action'        => 'index',
+                        'action'        => 'index'
                     ),
                 ),
             ),
@@ -25,7 +24,8 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
-            'Map\Controller\Index' => 'Map\Controller\IndexController'
+            'Map\Controller\Index' => 'Map\Controller\IndexController',
+            'Map\Controller\Mapsquare' => 'Map\Controller\MapsquareController'
         ),
     ),
     'view_manager' => array(
@@ -34,3 +34,5 @@ return array(
         ),
     ),
 );
+
+?>
