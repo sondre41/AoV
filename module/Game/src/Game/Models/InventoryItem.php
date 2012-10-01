@@ -1,8 +1,8 @@
 <?php
 
-namespace Map\Models;
+namespace Game\Models;
 
-class Inventory {
+class InventoryItem {
 	public $inventoryID;
 	public $playerID;
 	public $itemID;

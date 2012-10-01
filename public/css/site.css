@@ -1,3 +1,36 @@
+/*****************************************************
+/* Universal Styles
+/*****************************************************/
+
+
+
+/*****************************************************
+/* Library Styles
+/*****************************************************/
+
+div.errorMessage {
+	width: 500px;
+	background-image: url("../images/error.png");
+	background-repeat: no-repeat;
+	background-position: 6px 6px;
+	background-color: #ffcccc;
+	border: 1px solid #ff3333;
+	padding: 3px 3px 3px 25px;
+	margin: 5px 0px 5px 0px;
+}
+
+
+/*****************************************************
+/* Template Layouts
+/*****************************************************/
+
+
+
+/*****************************************************
+/* Individual Page Styles
+/*****************************************************/
+
+
 /* Map */
 table.mapTable {
 	border: 1px solid black;
@@ -39,6 +72,17 @@ table.mapTable td a.changePosition {
 
 table.mapTable td img {
 	margin-top: 5px;
+}
+
+/* Inventory */
+table.inventoryTable {
+	border-spacing: 10px;
+	cell-spacing: 10px;
+}
+td.inventoryItem {
+	border: 1px solid black;
+	padding: 5px;
+	margin: 5px;
 }
 
 /* Forest */

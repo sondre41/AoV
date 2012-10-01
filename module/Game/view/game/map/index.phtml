@@ -3,19 +3,22 @@
 <table class="mapTable">
 <tr>
 <td rowspan="<?php echo ($this->mapHeight + 2); ?>" class="navigation">
-<a href="<?php echo $this->url('map', array(
+<a href="<?php echo $this->url('game', array(
+						'controller' => 'map',
 						'action' => 'index',
 						'longitude' => $this->longitude,
 						'latitude' => $this->latitude - 1)); ?>">Venstre</a>
 </td>
 <td colspan="<?php echo $this->mapWidth; ?>" class="navigation">
-<a href="<?php echo $this->url('map', array(
+<a href="<?php echo $this->url('game', array(
+						'controller' => 'map',
 						'action' => 'index',
 						'longitude' => $this->longitude - 1,
 						'latitude' => $this->latitude)); ?>">Opp</a>
 </td>
 <td rowspan="<?php echo ($this->mapHeight + 2); ?>" class="navigation">
-<a href="<?php echo $this->url('map', array(
+<a href="<?php echo $this->url('game', array(
+						'controller' => 'map',
 						'action' => 'index',
 						'longitude' => $this->longitude,
 						'latitude' => $this->latitude + 1)); ?>">Høyre</a>
@@ -45,8 +48,8 @@ foreach($this->mapSquares as $square) {
 	} else {
 		// Make "move to this position" anchor
 		echo "<a class='changePosition' href='";
-		echo $this->url('map', array(
-						'controller' => 'index',
+		echo $this->url('game', array(
+						'controller' => 'map',
 						'action' => 'moveplayer',
 						'longitude' => $square->longitude,
 						'latitude' => $square->latitude));
@@ -60,7 +63,8 @@ foreach($this->mapSquares as $square) {
 
 <tr>
 <td colspan="<?php echo $this->mapWidth; ?>" class="navigation">
-<a href="<?php echo $this->url('map', array(
+<a href="<?php echo $this->url('game', array(
+						'controller' => 'map',
 						'action' => 'index',
 						'longitude' => $this->longitude + 1,
 						'latitude' => $this->latitude)); ?>">Ned</a>
@@ -71,8 +75,6 @@ foreach($this->mapSquares as $square) {
 
 <br />
 
-<a href="<?php echo $this->url('map', array(
+<a href="<?php echo $this->url('game', array(
 						'controller' => 'mapsquare',
-						'action' => 'index',
-						'longitude' => $this->longitude + 1,
-						'latitude' => $this->latitude)); ?>">Gå til rute</a>
+						'action' => 'index')); ?>">Gå til rute</a>

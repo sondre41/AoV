@@ -1,6 +1,6 @@
 <?php
 
-namespace Map\Controller;
+namespace Game\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
@@ -45,20 +45,20 @@ class MapsquareController extends AbstractActionController {
 			} else {
 				// Player is able to cut more trees, display form/button
 				$view = new ViewModel(array('blocked' => false));
-				$view->setTemplate('map/mapsquare/forest');
+				$view->setTemplate('game/mapsquare/forest');
 				return $view;
 			}
 		}
 		// Display time left counter
 		$view = new ViewModel(array('blocked' => true));
-		$view->setTemplate('map/mapsquare/forest');
+		$view->setTemplate('game/mapsquare/forest');
 		return $view;
 	}
 	
 	private function getMapTable() {
 		if (!$this->mapTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->mapTable = $serviceManager->get('Map\Models\MapTable');
+			$this->mapTable = $serviceManager->get('Game\Models\MapTable');
 		}
 		return $this->mapTable;
 	}
@@ -66,7 +66,7 @@ class MapsquareController extends AbstractActionController {
 	private function getPlayerTable() {
 		if (!$this->playerTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->playerTable = $serviceManager->get('Map\Models\PlayerTable');
+			$this->playerTable = $serviceManager->get('Game\Models\PlayerTable');
 		}
 		return $this->playerTable;
 	}
@@ -74,7 +74,7 @@ class MapsquareController extends AbstractActionController {
 	private function getItemTable() {
 		if (!$this->itemTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->itemTable = $serviceManager->get('Map\Models\ItemTable');
+			$this->itemTable = $serviceManager->get('Game\Models\ItemTable');
 		}
 		return $this->itemTable;
 	}
@@ -82,7 +82,7 @@ class MapsquareController extends AbstractActionController {
 	private function getInventoryTable() {
 		if (!$this->inventoryTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->inventoryTable = $serviceManager->get('Map\Models\InventoryTable');
+			$this->inventoryTable = $serviceManager->get('Game\Models\InventoryTable');
 		}
 		return $this->inventoryTable;
 	}

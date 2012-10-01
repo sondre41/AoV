@@ -1,11 +1,11 @@
 <?php
 
-namespace Map\Controller;
+namespace Game\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
-class IndexController extends AbstractActionController {
+class MapController extends AbstractActionController {
 	protected $mapTable;
 	protected $playerTable;
 	
@@ -57,13 +57,13 @@ class IndexController extends AbstractActionController {
     	// Move player
     	$this->getPlayerTable()->movePlayer($longitude, $latitude);
     	
-    	return $this->redirect()->toRoute('map');
+    	return $this->redirect()->toRoute('game');
     }
     
     private function getMapTable() {
     	if (!$this->mapTable) {
     		$serviceManager = $this->getServiceLocator();
-    		$this->mapTable = $serviceManager->get('Map\Models\MapTable');
+    		$this->mapTable = $serviceManager->get('Game\Models\MapTable');
     	}
     	return $this->mapTable;
     }
@@ -71,7 +71,7 @@ class IndexController extends AbstractActionController {
     private function getPlayerTable() {
     	if (!$this->playerTable) {
     		$serviceManager = $this->getServiceLocator();
-    		$this->playerTable = $serviceManager->get('Map\Models\PlayerTable');
+    		$this->playerTable = $serviceManager->get('Game\Models\PlayerTable');
     	}
     	return $this->playerTable;
     }

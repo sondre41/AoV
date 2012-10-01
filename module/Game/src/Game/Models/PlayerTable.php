@@ -1,6 +1,6 @@
 <?php
 
-namespace Map\Models;
+namespace Game\Models;
 
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\ResultSet\ResultSet;
@@ -8,7 +8,7 @@ use Zend\Db\TableGateway\AbstractTableGateway;
 use Zend\Db\Sql;
 
 class PlayerTable extends AbstractTableGateway {
-	protected $table ='player';
+	protected $table = 'player';
 	
 	public function __construct(Adapter $adapter) {
 		$this->adapter = $adapter;

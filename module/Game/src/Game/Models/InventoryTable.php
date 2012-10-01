@@ -1,19 +1,21 @@
 <?php
 
-namespace Map\Models;
+namespace Game\Models;
 
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\ResultSet\ResultSet;
-use Zend\Db\TableGateway\AbstractTableGateway;
 use Zend\Db\Sql;
+use Zend\Db\TableGateway\AbstractTableGateway;
 
 class InventoryTable extends AbstractTableGateway {
 	protected $table ='inventory';
 	
 	public function __construct(Adapter $adapter) {
 		$this->adapter = $adapter;
+		
 		$this->resultSetPrototype = new ResultSet();
-		$this->resultSetPrototype->setArrayObjectPrototype(new Inventory());
+		$this->resultSetPrototype->setArrayObjectPrototype(new InventoryItem());
+		
 		$this->initialize();
 	}
 	

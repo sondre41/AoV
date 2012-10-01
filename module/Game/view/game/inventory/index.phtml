@@ -1,0 +1,27 @@
+<h2>Inventory</h2>
+
+<table class="inventoryTable">
+<tr>
+
+<?php
+
+$itemsPerRow = 5;
+$itemsInCurrentRow = 0;
+foreach($this->inventoryItems as $item) {
+	if($itemsInCurrentRow == $itemsPerRow) {
+		echo "</tr><tr>\n";
+		$itemsInCurrentRow = 0;
+	}
+	
+	echo "<td class='inventoryItem'>";
+	echo "Type: " . $item->type . "<br>";
+	echo "Name: " . $item->name . "<br>";
+	echo "</td>\n";
+	
+	$itemsInCurrentRow++;
+}
+
+?>
+
+</tr>
+</table>

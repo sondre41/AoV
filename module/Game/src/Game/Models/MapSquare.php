@@ -1,6 +1,6 @@
 <?php
 
-namespace Map\Models;
+namespace Game\Models;
 
 class MapSquare {
 	public $longitude;

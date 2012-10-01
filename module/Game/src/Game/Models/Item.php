@@ -1,6 +1,6 @@
 <?php
 
-namespace Map\Models;
+namespace Game\Models;
 
 class Item {
 	public $itemID;

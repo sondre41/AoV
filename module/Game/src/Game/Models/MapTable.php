@@ -1,6 +1,6 @@
 <?php
 
-namespace Map\Models;
+namespace Game\Models;
 
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\ResultSet\ResultSet;
