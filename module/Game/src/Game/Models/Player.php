@@ -13,7 +13,6 @@ class Player {
 		$this->longitude = (isset($data['longitude'])) ? $data['longitude'] : null;
 		$this->latitude = (isset($data['latitude'])) ? $data['latitude'] : null;
 		$this->actionsBlockedUntil = (isset($data['actionsBlockedUntil'])) ? strtotime($data['actionsBlockedUntil']) : null;
-
 	}
 	
 	public function toArray() {

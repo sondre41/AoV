@@ -10,6 +10,7 @@ class MapsquareController extends AbstractActionController {
 	protected $playerTable;
 	protected $itemTable;
 	protected $inventoryTable;
+	protected $inventoryModel;
 	
 	public function indexAction() {
 		// Get the type of the map square the player is currently on
@@ -19,7 +20,7 @@ class MapsquareController extends AbstractActionController {
 		
 		switch($squareType) {
 			case 'forest':
-				return $this->forest();
+				return $this->forest($player);
 		}
 		
 		return new ViewModel(array(
@@ -27,30 +28,41 @@ class MapsquareController extends AbstractActionController {
 		));
 	}
 	
-	public function forest() {
-		$player = $this->getPlayerTable()->getPlayer(1);
+	public function forest($player) {
 		if($player->actionsBlockedTime() == 0) {
-			$request = $this->getRequest();
-			if($request->isPost()) {
-				$squareAction = $request->getPost('squareAction');
-				if($squareAction == 'forest') {
-					// Give the player a lumber item
-					$lumberItem = $this->getItemTable()->getItem('lumber');
-					$this->getInventoryTable()->giveItemToPlayer($lumberItem->itemID, 1);
+			// Check if the player has an axe
+			if($this->getInventoryModel()->playerHasItemActive(1, 'axe')) {
+				$request = $this->getRequest();
+				if($request->isPost()) {
+					$squareAction = $request->getPost('squareAction');
+					if($squareAction == 'forest') {
+						// Give the player a lumber item
+						$lumberItem = $this->getItemTable()->getItem('logs');
+						$this->getInventoryTable()->giveItemToPlayer($lumberItem->itemID, 1);
 						
-					// Block actions for the player for 3 minutes
-					$secondsToBlock = 60 * 3;
-					$this->getPlayerTable()->setPlayerActionsBlocked($secondsToBlock);
+						// Block actions for the player for 3 minutes
+						$secondsToBlock = 60 * 3;
+						$this->getPlayerTable()->setPlayerActionsBlocked($secondsToBlock);
+						
+						// Give message to player
+						$message = "Du har nå påbegynt hugging av et tre. Det tar 3 minutter før du er ferdig.";
+					}
+				} else {
+					// Player is able to cut more trees, display form/button
+					$view = new ViewModel(array('blocked' => false));
+					$view->setTemplate('game/mapsquare/forest');
+					return $view;
 				}
 			} else {
-				// Player is able to cut more trees, display form/button
-				$view = new ViewModel(array('blocked' => false));
-				$view->setTemplate('game/mapsquare/forest');
-				return $view;
+				// Player does not have an axe active, give message
+				$message = "Du må ha en øks aktiv i din inventar for å kunne hugge et tre.";
 			}
+		} else {
+			// Display time left counter
+			$message = "Du er i ferd med å hugge et tre.";
 		}
-		// Display time left counter
-		$view = new ViewModel(array('blocked' => true));
+		
+		$view = new ViewModel(array('blocked' => true, 'message' => $message));
 		$view->setTemplate('game/mapsquare/forest');
 		return $view;
 	}
@@ -85,6 +97,14 @@ class MapsquareController extends AbstractActionController {
 			$this->inventoryTable = $serviceManager->get('Game\Models\InventoryTable');
 		}
 		return $this->inventoryTable;
+	}
+	
+	private function getInventoryModel() {
+		if (!$this->inventoryModel) {
+			$serviceManager = $this->getServiceLocator();
+			$this->inventoryModel = $serviceManager->get('Game\Models\InventoryModel');
+		}
+		return $this->inventoryModel;
 	}
 }
 

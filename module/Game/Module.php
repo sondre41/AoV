@@ -2,10 +2,11 @@
 
 namespace Game;
 
-use Game\Models\Inventory;
+use Game\Models\InventoryModel;
 use Game\Models\InventoryTable;
 use Game\Models\ItemTable;
 use Game\Models\MapTable;
+use Game\Models\PlayerModel;
 use Game\Models\PlayerTable;
 use Zend\Mvc\ModuleRouteListener;
 
@@ -50,10 +51,15 @@ class Module
     				
     				return new InventoryTable($databaseAdapter);
     			},
-    			'Game\Models\Inventory' => function($serviceManager) {
+    			'Game\Models\InventoryModel' => function($serviceManager) {
 	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
 	    			
-	    			return new Inventory($databaseAdapter);
+	    			return new InventoryModel($databaseAdapter);
+    			},
+    			'Game\Models\PlayerModel' => function($serviceManager) {
+	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+	    			
+	    			return new PlayerModel($databaseAdapter);
     			}
     		)
     	);

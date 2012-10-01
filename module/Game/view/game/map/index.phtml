@@ -1,4 +1,4 @@
-<h2>Map</h2>
+<h2>Kart</h2>
 
 <table class="mapTable">
 <tr>
@@ -76,5 +76,9 @@ foreach($this->mapSquares as $square) {
 <br />
 
 <a href="<?php echo $this->url('game', array(
-						'controller' => 'mapsquare',
-						'action' => 'index')); ?>">Gå til rute</a>
+						'controller' => 'mapsquare')); ?>">Gå til rute</a>
+						
+<br />
+
+<a href="<?php echo $this->url('game', array(
+						'controller' => 'inventory')); ?>">Inventar</a>

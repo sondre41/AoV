@@ -1,11 +1,76 @@
-<h2>Inventory</h2>
+<h2>Inventar</h2>
+
+<?php
+
+// Print eventual message
+if($this->message) {
+	echo "<div class='message'>" . $this->message . "</div>";
+}
+
+
+// Find the active items in the inventory
+$bodySlotValues = array('head', 'rightHand', 'torso', 'leftHand', 'lowerBody', 'feet');
+$bodySlotItems = array();
+foreach($bodySlotValues as $value) {
+	foreach($this->inventoryItems as $item) {	
+		if($item['bodySlot'] == $value) {
+			$bodySlotItems[$value] = $item;
+			break;
+		}
+		
+		// Break when we've gone past the active items
+		if(is_null($item['bodySlot'])) {
+			break;
+		}
+	}
+}
+
+// Create form action urls
+$deleteFormAction = $this->url('game', array(
+		'controller' => 'inventory',
+		'action' => 'delete'
+));
+$activateFormAction = $this->url('game', array(
+		'controller' => 'inventory',
+		'action' => 'activate'
+));
+$deactivateFormAction = $this->url('game', array(
+		'controller' => 'inventory',
+		'action' => 'deactivate'
+));
+
+// Print active item information
+echo "<div class='activeItems'>";
+foreach($bodySlotValues as $value) {
+	echo "<div class='inventoryItem " . $value . "'>";
+	
+	if(array_key_exists($value, $bodySlotItems)) {
+		$item = $bodySlotItems[$value];
+		echo "Type: " . $item['type'] . "<br>\n";
+		echo "<img src='" . $this->basePath() . "/images/inventory/" . $item['type'] . "/" . $item['name'] . ".jpg" . "' /><br>\n";
+		
+		// Make "deactivate this item" form
+		echo "<form action='" . $deactivateFormAction . "' method='post'>\n";
+		echo "<input type='hidden' name='bodySlot' value='" . $value . "'>\n";
+		echo "<input type='submit' name='deleteItem' value='Deaktiver'>\n";
+		echo "</form>\n";
+	} else {
+		echo "<h1>TOM</h1>";
+	}
+	
+	echo "</div>";
+}
+echo "</div>";
+
+?>
 
 <table class="inventoryTable">
 <tr>
 
 <?php
 
-$itemsPerRow = 5;
+$totalWeight = 0;
+$itemsPerRow = 4;
 $itemsInCurrentRow = 0;
 foreach($this->inventoryItems as $item) {
 	if($itemsInCurrentRow == $itemsPerRow) {
@@ -13,15 +78,44 @@ foreach($this->inventoryItems as $item) {
 		$itemsInCurrentRow = 0;
 	}
 	
-	echo "<td class='inventoryItem'>";
-	echo "Type: " . $item->type . "<br>";
-	echo "Name: " . $item->name . "<br>";
-	echo "</td>\n";
+	// Print all non-active items
+	if(is_null($item['bodySlot'])) {
+		echo "<td class='inventoryItem'>";
+		echo "Type: " . $item['type'] . "<br>";
+		echo "Name: " . $item['name'] . "<br>";
+		echo "Weight: " . $item['weight'] . "<br>";
+		echo "<img src='" . $this->basePath() . "/images/inventory/" . $item['type'] . "/" . $item['name'] . ".jpg" . "' /><br>\n";
+		
+		if(!is_null($item['bodyPosition'])) {
+			// Make "activate this item" form
+			echo "<form action='" . $activateFormAction . "' method='post'>\n";
+			echo "<input type='hidden' name='inventoryID' value='" . $item['inventoryID'] . "'>\n";
+			if($item['bodyPosition'] == 'hand') {
+				echo "L: <input type='radio' name='hand' value='left'>&nbsp;&nbsp;&nbsp;\n";
+				echo "R: <input type='radio' name='hand' value='right' checked='checked'><br />\n";
+			}
+			echo "<input type='submit' name='activateItem' value='Aktiver'>\n";
+			echo "</form>\n";
+		}
+		
+		// Make "delete this item" form
+		echo "<form action='" . $deleteFormAction . "' method='post'>\n";
+		echo "<input type='hidden' name='inventoryID' value='" . $item['inventoryID'] . "'>\n";
+		echo "<input type='submit' name='deleteItem' value='Slett'>\n";
+		echo "</form>\n";
+		
+		echo "</td>\n";
+		
+		$itemsInCurrentRow++;
+	}
 	
-	$itemsInCurrentRow++;
+	$totalWeight += $item['weight'];
 }
 
 ?>
 
 </tr>
+
 </table>
+
+<div class="totalWeight">Total weight of inventory: <b><?php echo $totalWeight; ?></b> Kg</div>
