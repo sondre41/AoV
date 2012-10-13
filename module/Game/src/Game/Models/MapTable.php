@@ -11,10 +11,12 @@ class MapTable extends AbstractTableGateway {
 	protected $table ='map';
 	
 	public function __construct(Adapter $adapter) {
+		// Set DB adapter
 		$this->adapter = $adapter;
+		
+		// Set result set prototype
 		$this->resultSetPrototype = new ResultSet();
 		$this->resultSetPrototype->setArrayObjectPrototype(new MapSquare());
-		$this->initialize();
 	}
 	
 	public function fetchAll() {
@@ -40,6 +42,15 @@ class MapTable extends AbstractTableGateway {
 		}
 		
 		return $row;
+	}
+	
+	public function setMapSquareOwner($longitude, $latitude, $playerID) {
+		$this->update(array(
+						 'owner' => $playerID
+					 ), array(
+						 'longitude' => $longitude,
+						 'latitude' => $latitude
+					 ));
 	}
 	
 	// Randomly generate a map of the given width and height

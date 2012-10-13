@@ -1,27 +1,36 @@
 <h2>Kart</h2>
 
+<?php
+
+// Print eventual message
+if(isset($this->message)) {
+	echo "<div class='message'>" . $this->message . "</div>";
+}
+
+?>
+
 <table class="mapTable">
 <tr>
 <td rowspan="<?php echo ($this->mapHeight + 2); ?>" class="navigation">
 <a href="<?php echo $this->url('game', array(
 						'controller' => 'map',
 						'action' => 'index',
-						'longitude' => $this->longitude,
-						'latitude' => $this->latitude - 1)); ?>">Venstre</a>
+						'longitude' => $this->centerLongitude,
+						'latitude' => $this->centerLatitude - 1)); ?>">Venstre</a>
 </td>
 <td colspan="<?php echo $this->mapWidth; ?>" class="navigation">
 <a href="<?php echo $this->url('game', array(
 						'controller' => 'map',
 						'action' => 'index',
-						'longitude' => $this->longitude - 1,
-						'latitude' => $this->latitude)); ?>">Opp</a>
+						'longitude' => $this->centerLongitude - 1,
+						'latitude' => $this->centerLatitude)); ?>">Opp</a>
 </td>
 <td rowspan="<?php echo ($this->mapHeight + 2); ?>" class="navigation">
 <a href="<?php echo $this->url('game', array(
 						'controller' => 'map',
 						'action' => 'index',
-						'longitude' => $this->longitude,
-						'latitude' => $this->latitude + 1)); ?>">Høyre</a>
+						'longitude' => $this->centerLongitude,
+						'latitude' => $this->centerLatitude + 1)); ?>">Høyre</a>
 </td>
 </tr>
 
@@ -33,7 +42,13 @@ foreach($this->mapSquares as $square) {
 		// Insert new table row
 		echo "</tr><tr>";
 	}
-	echo "<td class='" . $square->type . "'>";
+	
+	echo "<td class='" . $square->type;
+	if($square->owner == $this->playerID) {
+		echo " playerOwned";
+	}
+	echo "'>";
+	
 	$isPlayerAtCurrentPosition = false;
 	for($i = 0; $i < count($this->players); $i++) {
 		if($this->players[$i]['longitude'] == $square->longitude &&
@@ -66,12 +81,21 @@ foreach($this->mapSquares as $square) {
 <a href="<?php echo $this->url('game', array(
 						'controller' => 'map',
 						'action' => 'index',
-						'longitude' => $this->longitude + 1,
-						'latitude' => $this->latitude)); ?>">Ned</a>
+						'longitude' => $this->centerLongitude + 1,
+						'latitude' => $this->centerLatitude)); ?>">Ned</a>
 </td>
 </tr>
 
 </table>
+
+
+<br />
+
+<a href="<?php echo $this->url('game', array(
+						'controller' => 'map',
+						'action' => 'buysquare',
+						'longitude' => $this->playerLongitude,
+						'latitude' => $this->playerLatitude)); ?>">Kjøp rute</a>
 
 <br />
 

@@ -25,8 +25,10 @@ return array(
     'controllers' => array(
         'invokables' => array(
             'Game\Controller\Map' => 'Game\Controller\MapController',
-            'Game\Controller\Mapsquare' => 'Game\Controller\MapsquareController',
-            'Game\Controller\Inventory' => 'Game\Controller\InventoryController'
+            //'Game\Controller\Mapsquare' => 'Game\Controller\MapsquareController',
+            'Game\Controller\Inventory' => 'Game\Controller\InventoryController',
+            'Game\Controller\City' => 'Game\Controller\CityController',
+            'Game\Controller\Traininggrounds' => 'Game\Controller\TraininggroundsController'
         ),
     ),
     'view_manager' => array(

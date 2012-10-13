@@ -1,0 +1,54 @@
+<h2>Treningsfelt</h2>
+
+<h3>Din spillers fysiske egenskaper</h3>
+<table class='abilityTable'>
+<tr><th>Egenskap</th><th>Nivå</th><th>Progresjon</th></tr>
+
+<?php 
+
+foreach($this->abilityLvlInfo as $ability => $info) {
+	echo "<tr>";
+	echo "<td>" . ucfirst($ability) . "</td>";
+	echo "<td class='lvl'>" . $info['lvl'] . "</td>";
+	echo "<td class='lvlBar'>";
+	$lvlBarWidth = 200;
+	$percentToNextLvl = ceil(($info['progressToNextLvl'] / $info['nextLvlCap']) * 100);
+	$notFadedBarWidth = $percentToNextLvl * ($lvlBarWidth / 100);
+	$fadedBarWidth = $lvlBarWidth - $notFadedBarWidth;
+	echo "<div class='lvlBar' style='width: " . $notFadedBarWidth . "px'></div>";
+	echo "<div class='lvlBar faded' style='width: " . $fadedBarWidth . "px'></div>";
+	echo "</td>";
+	echo "</tr>";
+}
+
+?>
+
+</table>
+
+<h3>Tren fysisk egenskap</h3>
+
+<?php
+
+if(!$this->blocked) {
+	$actionUrl = $this->url('game', array(
+		'controller' => 'traininggrounds',
+		'action' => 'train'
+	));
+
+?>
+
+<form action="<?php echo $actionUrl; ?>" method="post">
+<input type='radio' name='ability' value='atck'> Angrep<br>
+<input type='radio' name='ability' value='defs'> Forsvar<br>
+<input type='radio' name='ability' value='prec'> Presisjon<br>
+<input type='radio' name='ability' value='agil'> Smidighet<br>
+<input type='submit' name='submit' value='Tren'>
+</form>
+
+<?php
+
+} else {
+	echo "Du er i ferd med å trene en egenskap og må vente 60 sekunder før du kan trene på nytt.";
+}
+
+?>

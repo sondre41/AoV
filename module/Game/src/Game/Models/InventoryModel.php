@@ -67,7 +67,7 @@ class InventoryModel {
 	}
 	
 	// Returns whether or not a specific player has a specific item active in his inventory
-	public function playerHasItemActive($playerID, $itemName) {
+	public function playerHasItemTypeActive($playerID, $itemType) {
 		// Build SELECT statement
 		$sql = new Sql($this->adapter);
 		$select = $sql->select('inventory');
@@ -77,7 +77,7 @@ class InventoryModel {
 		// Build WHERE statement
 		$where = new Where();
 		$where->equalTo('playerID', $playerID)
-			  ->equalTo('item.name', $itemName)
+			  ->equalTo('item.type', $itemType)
 			  ->in('bodySlot', array('rightHand', 'leftHand'));
 		
 		// Add WHERE to SELECT

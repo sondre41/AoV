@@ -47,7 +47,7 @@ foreach($bodySlotValues as $value) {
 	if(array_key_exists($value, $bodySlotItems)) {
 		$item = $bodySlotItems[$value];
 		echo "Type: " . $item['type'] . "<br>\n";
-		echo "<img src='" . $this->basePath() . "/images/inventory/" . $item['type'] . "/" . $item['name'] . ".jpg" . "' /><br>\n";
+		echo "<img src='" . $this->basePath() . "/images/inventory/" . $item['category'] . "/" . $item['type'] . "/" . $item['name'] . ".jpg" . "' /><br>\n";
 		
 		// Make "deactivate this item" form
 		echo "<form action='" . $deactivateFormAction . "' method='post'>\n";
@@ -81,10 +81,11 @@ foreach($this->inventoryItems as $item) {
 	// Print all non-active items
 	if(is_null($item['bodySlot'])) {
 		echo "<td class='inventoryItem'>";
+		echo "Category: " . $item['category'] . "<br>";
 		echo "Type: " . $item['type'] . "<br>";
 		echo "Name: " . $item['name'] . "<br>";
 		echo "Weight: " . $item['weight'] . "<br>";
-		echo "<img src='" . $this->basePath() . "/images/inventory/" . $item['type'] . "/" . $item['name'] . ".jpg" . "' /><br>\n";
+		echo "<img src='" . $this->basePath() . "/images/inventory/" . $item['category'] . "/" . $item['type'] . "/" . $item['name'] . ".jpg" . "' /><br>\n";
 		
 		if(!is_null($item['bodyPosition'])) {
 			// Make "activate this item" form

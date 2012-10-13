@@ -2,77 +2,60 @@
 
 namespace Game\Controller;
 
+use Zend\Mvc\MvcEvent;
+
+use Zend\EventManager\EventManagerAwareInterface;
+
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
+use Zend\ServiceManager\ServiceManager;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 class MapsquareController extends AbstractActionController {
-	protected $mapTable;
 	protected $playerTable;
-	protected $itemTable;
-	protected $inventoryTable;
-	protected $inventoryModel;
 	
+	public function __construct() {
+		$this->getEventManager()->attach('*', array($this, 'preDispatch'), 1000);
+		echo "construct";
+	}
+	
+	public function preDispatch() {
+		echo "This is preDispatch()!";
+	}
+	
+// 	protected function attachDefaultListeners() {
+// 		parent::attachDefaultListeners();
+		
+// 		// Get longitude and latitude from request
+// 		$longitude = (int) $this->params()->fromRoute('longitude', 0);
+// 		$latitude = (int) $this->params()->fromRoute('latitude', 0);
+		 
+// 		if(!$longitude || !$latitude) {
+// 			// Redirect to map controller
+// 			return $this->redirect()->toRoute('game', array(
+// 					'controller' => 'map'
+// 			));
+// 		}
+// 	}
+	
+	// Class initialization
+// 	public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+// 	{
+// 		parent::setServiceLocator($serviceLocator);
+		
+// 		// Get longitude and latitude from request
+// 		$longitude = (int) $this->params()->fromRoute('longitude', 0);
+//     	$latitude = (int) $this->params()->fromRoute('latitude', 0);
+    	
+//     	if(!$longitude || !$latitude) {
+//     		// Redirect to map controller
+//     		return $this->redirect()->toRoute('game', array(
+//     				'controller' => 'map'
+//     		));
+//     	}
+// 	}
+
 	public function indexAction() {
-		// Get the type of the map square the player is currently on
-		$player = $this->getPlayerTable()->getPlayer(1);
-		$mapSquare = $this->getMapTable()->getMapSquare($player->longitude, $player->latitude);
-		$squareType = $mapSquare->type;
-		
-		switch($squareType) {
-			case 'forest':
-				return $this->forest($player);
-		}
-		
-		return new ViewModel(array(
-			'mapSquare' => $mapSquare
-		));
-	}
-	
-	public function forest($player) {
-		if($player->actionsBlockedTime() == 0) {
-			// Check if the player has an axe
-			if($this->getInventoryModel()->playerHasItemActive(1, 'axe')) {
-				$request = $this->getRequest();
-				if($request->isPost()) {
-					$squareAction = $request->getPost('squareAction');
-					if($squareAction == 'forest') {
-						// Give the player a lumber item
-						$lumberItem = $this->getItemTable()->getItem('logs');
-						$this->getInventoryTable()->giveItemToPlayer($lumberItem->itemID, 1);
-						
-						// Block actions for the player for 3 minutes
-						$secondsToBlock = 60 * 3;
-						$this->getPlayerTable()->setPlayerActionsBlocked($secondsToBlock);
-						
-						// Give message to player
-						$message = "Du har nå påbegynt hugging av et tre. Det tar 3 minutter før du er ferdig.";
-					}
-				} else {
-					// Player is able to cut more trees, display form/button
-					$view = new ViewModel(array('blocked' => false));
-					$view->setTemplate('game/mapsquare/forest');
-					return $view;
-				}
-			} else {
-				// Player does not have an axe active, give message
-				$message = "Du må ha en øks aktiv i din inventar for å kunne hugge et tre.";
-			}
-		} else {
-			// Display time left counter
-			$message = "Du er i ferd med å hugge et tre.";
-		}
-		
-		$view = new ViewModel(array('blocked' => true, 'message' => $message));
-		$view->setTemplate('game/mapsquare/forest');
-		return $view;
-	}
-	
-	private function getMapTable() {
-		if (!$this->mapTable) {
-			$serviceManager = $this->getServiceLocator();
-			$this->mapTable = $serviceManager->get('Game\Models\MapTable');
-		}
-		return $this->mapTable;
+		echo "index";
 	}
 	
 	private function getPlayerTable() {
@@ -81,30 +64,6 @@ class MapsquareController extends AbstractActionController {
 			$this->playerTable = $serviceManager->get('Game\Models\PlayerTable');
 		}
 		return $this->playerTable;
-	}
-	
-	private function getItemTable() {
-		if (!$this->itemTable) {
-			$serviceManager = $this->getServiceLocator();
-			$this->itemTable = $serviceManager->get('Game\Models\ItemTable');
-		}
-		return $this->itemTable;
-	}
-	
-	private function getInventoryTable() {
-		if (!$this->inventoryTable) {
-			$serviceManager = $this->getServiceLocator();
-			$this->inventoryTable = $serviceManager->get('Game\Models\InventoryTable');
-		}
-		return $this->inventoryTable;
-	}
-	
-	private function getInventoryModel() {
-		if (!$this->inventoryModel) {
-			$serviceManager = $this->getServiceLocator();
-			$this->inventoryModel = $serviceManager->get('Game\Models\InventoryModel');
-		}
-		return $this->inventoryModel;
 	}
 }
 
