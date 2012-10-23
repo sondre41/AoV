@@ -1,0 +1,246 @@
+<h2>Landsby</h2>
+
+<?php
+
+// Print eventual message
+if($this->message) {
+	echo "<div class='message'>" . $this->message . "</div>";
+}
+
+$town = $this->town;
+
+// Position
+echo "Posisjon: " . $town->longitude . ", " . $town->latitude . "<br/>";
+
+// Level
+echo "Nivå: " . $this->completedBuildings->count() . "<br/>";
+
+// Resources
+echo "<h3>Resurser</h3>";
+echo "Plank: " . $town->lumber . "<br/>";
+echo "Stein: " . $town->stone . "<br/>";
+echo "Tre: " . $town->log . "<br/>";
+
+// Completed buildings
+$buildingTreeUrl = $this->url('game', array(
+	'controller' => 'town',
+	'action' => 'buildingtree',
+	'longitude' => $this->longitude,
+	'latitude' => $this->latitude
+));
+
+?>
+
+<a href='<?php echo $buildingTreeUrl; ?>'><h3>Bygninger</h3></a>
+
+<?php
+
+// Print anchors to the specific building pages
+if($this->completedBuildings->count() > 0) {
+	foreach($this->completedBuildings as $building) {
+		switch($building->type) {
+			case 'blacksmith':
+				$url = $this->url('game', array(
+						'controller' => 'blacksmith',
+						'longitude' => $this->longitude,
+						'latitude' => $this->latitude
+				));
+				echo "<a href='" . $url . "'>Smed</a><br/>";
+				break;
+				
+			case 'resource storage':
+				$url = $this->url('game', array(
+						'controller' => 'storage',
+						'longitude' => $this->longitude,
+						'latitude' => $this->latitude
+				));
+				echo "<a href='" . $url . "'>Resurslager</a><br/>";
+				break;
+		}
+	}
+}
+
+// Uncompleted building
+
+?>
+
+<h3>Bygningsprosjekt</h3>
+
+<?php
+
+// Generate URL to the building tree page
+$buildingTreeUrl = $this->url('game', array(
+	'controller' => 'town',
+	'action' => 'buildingtree',
+	'longitude' => $this->longitude,
+	'latitude' => $this->latitude
+));
+
+// If the town has an uncompleted building/building project print info about it and create eventual forms to let the player continue the building process
+if($this->uncompletedBuilding) {
+	$building = $this->uncompletedBuilding;
+
+	// Print uncompleted building info
+	echo "Bygning: <b>" . $building->type . "</b><br/>";
+	echo "Mangler: <b>" . $building->lumberLeft . " plank</b>, <b>" . $building->stoneLeft . " stein</b> og <b>" . $building->logLeft . " tre</b>";
+	
+	echo "<h4>Bygg på bygningsprosjekt</h4>";
+	
+	// Make building form action url
+	$buildUrl = $this->url('game', array(
+			'controller' => 'town',
+			'action' => 'build',
+			'longitude' => $this->longitude,
+			'latitude' => $this->latitude
+	));
+	
+	if($this->townHasStorage) {
+		echo "<h5>Bruk resurser fra landsbyen</h5>";
+		
+		// Resource check
+		$treeCheck = false;
+		$stoneCheck = false;
+		$logCheck = false;
+		if($building->lumberLeft > 0 && $town->lumber > 0) {
+			$treeCheck = true;
+		}
+		if($building->stoneLeft > 0 && $town->stone > 0) {
+			$stoneCheck = true;
+		}
+		if($building->logLeft > 0 && $town->log > 0) {
+			$logCheck = true;
+		}
+		
+		// Make form for building on the uncompleted building project using resources stored in the town
+		if($treeCheck || $stoneCheck || $logCheck) {
+		
+			?>
+			
+			<form action='<?php echo $buildUrl; ?>' method='POST'>
+			<input type='hidden' name='resourceContainer' value='storage'>
+			
+			<?php
+			
+			if($treeCheck) {
+			
+				?>
+				
+				<input type='submit' name='buildSubmit' value='Lumber'>
+				
+				<?php
+			
+			}
+			
+			if($stoneCheck) {
+			
+				?>
+				
+				<input type='submit' name='buildSubmit' value='Stone'>
+				
+				<?php
+			
+			}
+			
+			if($logCheck) {
+			
+				?>
+				
+				<input type='submit' name='buildSubmit' value='Log'>
+				
+				<?php
+					
+			}
+			
+			?>
+			
+			</form>
+			
+			<?php
+		
+		} else {
+			echo "Det finnes ikke mer av de nødvendige bygningsresursene i landsbyen.";
+		}
+	}
+	
+	echo "<h5>Bruk resurser fra din inventar</h5>";
+	
+	// Count building items in players inventory
+	$resourceNames = array('lumber', 'stone', 'log');
+	$playerResources = array('lumber' => 0, 'stone' => 0, 'log' => 0);
+	for($i = 0; $i < 3; $i++) {
+		foreach($this->playerInventory as $inventoryItem) {
+			if($inventoryItem['name'] == $resourceNames[$i]) {
+				$playerResources[$resourceNames[$i]]++;
+			}
+		}
+	}
+	
+	// Resource check
+	$treeCheck = false;
+	$stoneCheck = false;
+	$logCheck = false;
+	if($building->lumberLeft > 0 && $playerResources['lumber'] > 0) {
+		$treeCheck = true;
+	}
+	if($building->stoneLeft > 0 && $playerResources['stone'] > 0) {
+		$stoneCheck = true;
+	}
+	if($building->logLeft > 0 && $playerResources['log'] > 0) {
+		$logCheck = true;
+	}
+	
+	// Make form for building on the uncompleted building project using resources stored in the town
+	if($treeCheck || $stoneCheck || $logCheck) {
+	
+		?>
+			
+			<form action='<?php echo $buildUrl; ?>' method='POST'>
+			<input type='hidden' name='resourceContainer' value='inventory'>
+			
+			<?php
+			
+			if($treeCheck) {
+			
+				?>
+				
+				<input type='submit' name='buildSubmit' value='Lumber'>
+				
+				<?php
+			
+			}
+			
+			if($stoneCheck) {
+			
+				?>
+				
+				<input type='submit' name='buildSubmit' value='Stone'>
+				
+				<?php
+			
+			}
+			
+			if($logCheck) {
+			
+				?>
+				
+				<input type='submit' name='buildSubmit' value='Log'>
+				
+				<?php
+					
+			}
+			
+			?>
+			
+			</form>
+			
+			<?php
+		
+		} else {
+			echo "Du har ikke mer av de nødvendige bygningsresursene i din inventar.";
+		}
+} else {
+	
+	echo "Denne landsbyen kan <a href='" . $buildingTreeUrl . "'>starte et nytt bygningsprosjekt</a>.";
+}
+
+?>

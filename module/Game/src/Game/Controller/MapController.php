@@ -8,13 +8,17 @@ use Zend\View\Model\ViewModel;
 class MapController extends AbstractActionController {
 	protected $mapTable;
 	protected $playerTable;
+	protected $townTable;
 	
     public function indexAction() {
+    	// Get center map coordinates from the request
     	$centerLongitude = $this->params()->fromRoute('longitude', false);
     	$centerLatitude = $this->params()->fromRoute('latitude', false);
     	
+    	// Get player information
     	$player = $this->getPlayerTable()->getPlayer(1);
     	
+    	// Set map constants
     	$mapHeight = $mapWidth = 100;
     	$mapPartHeight = 11;
     	$mapPartWidth = 17;
@@ -30,8 +34,6 @@ class MapController extends AbstractActionController {
     		$longitude = $this->getCenteredLongitude($centerLongitude, $mapPartHeight, $mapHeight);
     		$latitude = $this->getCenteredLatitude($centerLatitude, $mapPartWidth, $mapWidth);
     	}
-    	
-    	$player = $this->getPlayerTable()->getPlayer(1);
     	
         return array(
         	'mapSquares' => $this->getMapTable()->getMapPart($mapPartHeight, $mapPartWidth, $longitude, $latitude),
@@ -49,9 +51,14 @@ class MapController extends AbstractActionController {
     }
     
     public function buysquareAction() {
-    	// Get coordinates from request
+    	// Get coordinates from the request
     	$longitude = $this->params()->fromRoute('longitude', false);
     	$latitude = $this->params()->fromRoute('latitude', false);
+    	
+    	// Coordinates are required
+    	if(!$longitude || !$latitude) {
+    		return $this->redirect()->toRoute('game/map');
+    	}
     	
     	// Check whether or not the player has the required amount of gold
     	$player = $this->getPlayerTable()->getPlayer(1);
@@ -75,6 +82,43 @@ class MapController extends AbstractActionController {
     			array('message' => $message)
     	));
     		
+    	// Re-render map
+    	$view->setTemplate('game/map/index');
+    	return $view;
+    }
+    
+    public function establishtownAction() {
+        // Get coordinates from the request
+    	$longitude = $this->params()->fromRoute('longitude', false);
+    	$latitude = $this->params()->fromRoute('latitude', false);
+    	
+    	// Coordinates are required
+    	if(!$longitude || !$latitude) {
+    		return $this->redirect()->toRoute('game/map');
+    	}
+    	
+    	// Check if the player already has a town established
+    	if($this->getTownTable()->playerOwnsTown(1)) {
+    		return $this->redirect()->toRoute('game/map');
+    	}
+    	
+    	// Check if the map square type with the given coordinates are of the correct type
+    	$mapSquare = $this->getMapTable()->getMapSquare($longitude, $latitude);
+    	if(!$mapSquare->type == 'plains') {
+    		return $this->redirect()->toRoute('game/map');
+    	}
+    	
+    	// Register a town at the given coordinates
+    	$this->getMapTable()->setMapSquareType($longitude, $latitude, 'town');
+    	$this->getTownTable()->createTown($longitude, $latitude, 1);
+    	
+    	$message = "Du opprettet en landsby i den valgte ruten ($longitude, $latitude).";
+    	
+    	$view = new ViewModel(array_merge(
+    			$this->indexAction(),
+    			array('message' => $message)
+    	));
+    	
     	// Re-render map
     	$view->setTemplate('game/map/index');
     	return $view;
@@ -134,6 +178,14 @@ class MapController extends AbstractActionController {
     		$this->playerTable = $serviceManager->get('Game\Models\PlayerTable');
     	}
     	return $this->playerTable;
+    }
+
+    private function getTownTable() {
+    	if (!$this->townTable) {
+    		$serviceManager = $this->getServiceLocator();
+    		$this->townTable = $serviceManager->get('Game\Models\TownTable');
+    	}
+    	return $this->townTable;
     }
 }
 

@@ -1,0 +1,67 @@
+<h2>Bygningstre</h2>
+
+<div class='buildingTree'>
+
+<?php
+
+if(!$this->uncompletedBuilding) {
+	$formUrl = $this->url('game', array(
+		'controller' => 'town',
+		'action' => 'startbuild',
+		'longitude' => $this->longitude,
+		'latitude' => $this->latitude
+	));
+	echo "<form action='" . $formUrl . "' method='POST'>";
+}
+
+$buildingStates = array();
+foreach($this->buildings as $building) {
+	$isCompleted = false;
+	foreach($this->completedBuildings as $completedBuilding) {
+		if($building == $completedBuilding['type']) {
+			$isCompleted = true;
+			break;
+		}
+	}
+	
+	echo "<div class='building " . str_replace(' ', '_', $building) . " ";
+	
+	if($isCompleted) {
+		echo 'completed';
+	} else if($building == $this->uncompletedBuilding->type) {
+		echo 'inProgress';
+	} else {
+		echo 'notStarted';
+	}
+	
+	echo "'>" . ucfirst($building);
+	
+	if(!$this->uncompletedBuilding && !$isCompleted) {
+		echo "<br /><input type='radio' name='buildingToStart' value='" . $building . "'>";
+	}
+	
+	echo "</div>\n";
+}
+
+if(!$this->uncompletedBuilding) {
+	echo "<input type='submit' id='startBuildingSubmit' value='Start bygging'>";
+	
+	echo "</form>";
+}
+
+?>
+
+</div>
+
+<?php
+
+$backUrl = $this->url('game', array(
+	'controller' => 'town',
+	'action' => 'index',
+	'longitude' => $this->longitude,
+	'latitude' => $this->latitude
+));
+
+?>
+
+<a href='<?php echo $backUrl; ?>'><< Tilbake til landsby</a>

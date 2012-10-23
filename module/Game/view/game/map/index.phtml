@@ -100,6 +100,14 @@ foreach($this->mapSquares as $square) {
 <br />
 
 <a href="<?php echo $this->url('game', array(
+						'controller' => 'map',
+						'action' => 'establishtown',
+						'longitude' => $this->playerLongitude,
+						'latitude' => $this->playerLatitude)); ?>">Opprett landsby</a>
+
+<br />
+
+<a href="<?php echo $this->url('game', array(
 						'controller' => 'mapsquare')); ?>">Gå til rute</a>
 						
 <br />

@@ -27,6 +27,7 @@ return array(
             'Game\Controller\Map' => 'Game\Controller\MapController',
             //'Game\Controller\Mapsquare' => 'Game\Controller\MapsquareController',
             'Game\Controller\Inventory' => 'Game\Controller\InventoryController',
+            'Game\Controller\Town' => 'Game\Controller\TownController',
             'Game\Controller\City' => 'Game\Controller\CityController',
             'Game\Controller\Traininggrounds' => 'Game\Controller\TraininggroundsController'
         ),

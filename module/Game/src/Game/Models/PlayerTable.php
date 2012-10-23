@@ -17,10 +17,6 @@ class PlayerTable extends AbstractTableGateway {
 		// Set DB adapter
 		$this->adapter = $adapter;
 		
-		// Set result set prototype
-		//$this->resultSetPrototype = new ResultSet();
-		//$this->resultSetPrototype->setArrayObjectPrototype(new Player());
-		
 		// Set table gateway feture set
 		$featureSet = new Feature\FeatureSet();
 		$featureSet->addFeature(new Feature\RowGatewayFeature(new Player($this->primary, $this->table, $this->adapter, $this->sql)));
@@ -28,6 +24,18 @@ class PlayerTable extends AbstractTableGateway {
 		
 		// Initialize
 		$this->initialize();
+	}
+	
+	// Get a specific player from DB
+	public function getPlayer($playerID) {
+		$rowset = $this->select(array('playerID' => $playerID));
+		$row = $rowset->current();
+	
+		if (!$row) {
+			throw new \Exception("No player with $playerID could be found.");
+		}
+	
+		return $row;
 	}
 	
 	// Get all players within a specific position range
@@ -48,18 +56,6 @@ class PlayerTable extends AbstractTableGateway {
 			  ->equalTo('latitude', $latitude);
 		
 		return $this->select($where);
-	}
-	
-	// Get a specific player from DB
-	public function getPlayer($playerID) {
-		$rowset = $this->select(array('playerID' => $playerID));
-		$row = $rowset->current();
-		
-		if (!$row) {
-			throw new \Exception("No player with $playerID could be found.");
-		}
-		
-		return $row;
 	}
 	
 	// Increment a specific ability for a specific player with an amount

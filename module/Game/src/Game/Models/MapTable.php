@@ -8,7 +8,7 @@ use Zend\Db\TableGateway\AbstractTableGateway;
 use Zend\Db\Sql;
 
 class MapTable extends AbstractTableGateway {
-	protected $table ='map';
+	protected $table = 'map';
 	
 	public function __construct(Adapter $adapter) {
 		// Set DB adapter
@@ -19,10 +19,12 @@ class MapTable extends AbstractTableGateway {
 		$this->resultSetPrototype->setArrayObjectPrototype(new MapSquare());
 	}
 	
+	// Get all map squares (the whole map)
 	public function fetchAll() {
 		return $this->select();
 	}
 	
+	// Get all the map squares of a part/section of the map
 	public function getMapPart($height = 11, $width = 13, $longitude = 0, $latitude = 0) {
 		$where = new Sql\Where();
 		$where->greaterThanOrEqualTo('longitude', $longitude)
@@ -44,6 +46,7 @@ class MapTable extends AbstractTableGateway {
 		return $row;
 	}
 	
+	// Set the owner of a specific map square
 	public function setMapSquareOwner($longitude, $latitude, $playerID) {
 		$this->update(array(
 						 'owner' => $playerID
@@ -51,6 +54,16 @@ class MapTable extends AbstractTableGateway {
 						 'longitude' => $longitude,
 						 'latitude' => $latitude
 					 ));
+	}
+	
+	// Set the type of a specific map square
+	public function setMapSquareType($longitude, $latitude, $mapSquareType) {
+		$this->update(array(
+				'type' => $mapSquareType
+		), array(
+				'longitude' => $longitude,
+				'latitude' => $latitude
+		));
 	}
 	
 	// Randomly generate a map of the given width and height

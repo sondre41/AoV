@@ -226,3 +226,94 @@ table.abilityTable td.lvlBar div.faded {
 	filter: alpha(opacity=50);
 	border-left: 1px solid red;
 }
+
+/***** Building tree *****/
+div.buildingTree {
+	position: relative;
+	height: 700px;
+	margin-top: 30px;
+}
+
+div.building {
+	position: absolute;
+	border: 1px solid black;
+	width: 90px;
+	height: 90px;
+	padding: 5px;
+	font-size: 1.2em;
+	font-weight: bold;
+	text-align: center;
+}
+
+div.completed {
+	background-color: #99ff99;
+}
+
+div.inProgress {
+	background-color: #9999ff;
+}
+
+div.notStarted {
+	background-color: #ff9999;
+}
+
+div.town {
+	left: 300px;
+}
+
+div.resource_storage {
+	left: 0px;
+	top: 150px;
+}
+
+div.item_storage {
+	left: 0px;
+	top: 300px;
+}
+
+div.tailor {
+	left: 300px;
+	top: 150px;
+}
+
+div.blacksmith {
+	left: 300px;
+	top: 300px;
+}
+
+div.saw_buck {
+	left: 150px;
+	top: 150px;
+}
+
+div.lumbermill {
+	left: 150px;
+	top: 300px;
+}
+
+div.barracks {
+	left: 600px;
+	top: 150px;
+}
+
+div.iron_melting_works {
+	left: 450px;
+	top: 150px;
+}
+
+div.gold_melting_works {
+	left: 450px;
+	top: 300px;
+}
+
+div.steel_melting_works {
+	left: 450px;
+	top: 450px;
+}
+
+#startBuildingSubmit {
+	position: absolute;
+	top: 600px;
+	left: 300px;
+	padding: 10px;
+}

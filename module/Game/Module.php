@@ -9,6 +9,8 @@ use Game\Models\ItemTable;
 use Game\Models\MapTable;
 use Game\Models\PlayerModel;
 use Game\Models\PlayerTable;
+use Game\Models\TownTable;
+use Game\Models\TownBuildingTable;
 
 // Zend
 use Zend\ModuleManager\ModuleManager;
@@ -65,6 +67,16 @@ class Module
 	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
 	    			
 	    			return new CityTable($databaseAdapter);
+    			},
+    			'Game\Models\TownTable' => function($serviceManager) {
+	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+	    			
+	    			return new TownTable($databaseAdapter, $serviceManager);
+    			},
+    			'Game\Models\TownBuildingTable' => function($serviceManager) {
+	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+	    			
+	    			return new TownBuildingTable($databaseAdapter);
     			}
     		)
     	);
