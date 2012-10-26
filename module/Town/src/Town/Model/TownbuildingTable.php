@@ -1,6 +1,6 @@
 <?php
 
-namespace Game\Models;
+namespace Town\Model;
 
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\TableGateway\AbstractTableGateway;

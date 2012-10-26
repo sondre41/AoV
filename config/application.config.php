@@ -3,7 +3,8 @@
 return array(
     'modules' => array(
         'Application',
-    	'Game'
+    	'Game',
+    	'Town'
     ),
     'module_listener_options' => array(
     	'module_paths' => array(

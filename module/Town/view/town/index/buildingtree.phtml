@@ -5,8 +5,8 @@
 <?php
 
 if(!$this->uncompletedBuilding) {
-	$formUrl = $this->url('game', array(
-		'controller' => 'town',
+	$formUrl = $this->url('town', array(
+		'controller' => 'index',
 		'action' => 'startbuild',
 		'longitude' => $this->longitude,
 		'latitude' => $this->latitude
@@ -52,9 +52,7 @@ if(!$this->uncompletedBuilding) {
 
 <?php
 
-$backUrl = $this->url('game', array(
-	'controller' => 'town',
-	'action' => 'index',
+$backUrl = $this->url('town', array(
 	'longitude' => $this->longitude,
 	'latitude' => $this->latitude
 ));

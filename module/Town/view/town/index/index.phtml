@@ -34,7 +34,7 @@ if(count($this->completedBuildings) > 0) {
 	foreach($this->completedBuildings as $building) {
 		switch($building) {
 			case 'blacksmith':
-				$url = $this->url('game', array(
+				$url = $this->url('town', array(
 						'controller' => 'blacksmith',
 						'longitude' => $this->longitude,
 						'latitude' => $this->latitude
@@ -43,7 +43,7 @@ if(count($this->completedBuildings) > 0) {
 				break;
 				
 			case 'resource storage':
-				$url = $this->url('game', array(
+				$url = $this->url('town', array(
 						'controller' => 'storage',
 						'longitude' => $this->longitude,
 						'latitude' => $this->latitude
@@ -54,8 +54,8 @@ if(count($this->completedBuildings) > 0) {
 	}
 }
 
-$buildingTreeUrl = $this->url('game', array(
-		'controller' => 'town',
+$buildingTreeUrl = $this->url('town', array(
+		'controller' => 'index',
 		'action' => 'buildingtree',
 		'longitude' => $this->longitude,
 		'latitude' => $this->latitude
@@ -71,8 +71,8 @@ echo "<br /><a href='" . $buildingTreeUrl . "'>Bygningstre</a>";
 <?php
 
 // Generate URL to the building tree page
-$buildingTreeUrl = $this->url('game', array(
-	'controller' => 'town',
+$buildingTreeUrl = $this->url('town', array(
+	'controller' => 'index',
 	'action' => 'buildingtree',
 	'longitude' => $this->longitude,
 	'latitude' => $this->latitude
@@ -83,24 +83,24 @@ if($this->uncompletedBuilding) {
 	$building = $this->uncompletedBuilding;
 
 	// Print uncompleted building info
-	echo "Bygning: <b>" . $building->type . "</b><br/>";
+	echo "Bygning: <b>" . ucfirst($building->type) . "</b><br/>";
 	echo "Mangler: <b>" . $building->lumberLeft . " plank</b>, <b>" . $building->stoneLeft . " stein</b> og <b>" . $building->logLeft . " tre</b>";
 	
 	// Print anchor for stoping the current buildingproject
-	$stopBuildingUrl = $this->url('game', array(
-		'controller' => 'town',
+	$stopBuildingUrl = $this->url('town', array(
+		'controller' => 'index',
 		'action' => 'stopbuild',
 		'longitude' => $this->longitude,
 		'latitude' => $this->latitude
 	));
 	
-	echo "<br /><a href='" . $stopBuildingUrl . "'>Stopp bygningsprosjektet</a>";
+	echo "<br /><br /><a href='" . $stopBuildingUrl . "'>Stopp bygningsprosjektet</a>";
 	
 	echo "<h4>Bygg på bygningsprosjekt</h4>";
 	
 	// Make building form action url
-	$buildUrl = $this->url('game', array(
-			'controller' => 'town',
+	$buildUrl = $this->url('town', array(
+			'controller' => 'index',
 			'action' => 'build',
 			'longitude' => $this->longitude,
 			'latitude' => $this->latitude

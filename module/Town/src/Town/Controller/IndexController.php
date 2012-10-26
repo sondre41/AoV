@@ -1,11 +1,11 @@
 <?php
 
-namespace Game\Controller;
+namespace Town\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
-class TownController extends AbstractActionController {
+class IndexController extends AbstractActionController {
 	protected $inventoryModel;
 	protected $inventoryTable;
 	protected $playerTable;
@@ -62,7 +62,7 @@ class TownController extends AbstractActionController {
 		
 		if($resourceType != 'lumber' && $resourceType != 'stone' && $resourceType != 'log' &&
 		   $resourceContainer != 'storage' && $resourceContainer != 'inventory') {
-			return $this->redirect()->toRoute('game/town');
+			return $this->redirect()->toRoute('town');
 		}
 		
 		$town = $this->getTownTable()->getTown($longitude, $latitude);
@@ -70,7 +70,7 @@ class TownController extends AbstractActionController {
 		if($resourceContainer == 'storage') {
 			// Check if the town has has a quantity of one or more of the submited resource type in its resource storage
 			if($town->$resourceType <= 0) {
-				return $this->redirect()->toRoute('game/town');
+				return $this->redirect()->toRoute('town');
 			}
 			
 			// Reduce the amount of available resources for building in the town
@@ -89,7 +89,7 @@ class TownController extends AbstractActionController {
 			}
 			
 			if($resourceValue <= 0) {
-				return $this->redirect()->toRoute('game/town');
+				return $this->redirect()->toRoute('town');
 			}
 			
 			// Delete a resource of the submited resource type from the players inventory
@@ -113,7 +113,7 @@ class TownController extends AbstractActionController {
 					'message' => $message
 		)));
 		
-		$view->setTemplate('game/town/index');
+		$view->setTemplate('town/town/index');
 		
 		return $view;
 	}
@@ -157,7 +157,7 @@ class TownController extends AbstractActionController {
 		$request = $this->getRequest();
 		
 		if(!$request->isPost()) {
-			return $this->redirect()->toRoute('game/town');
+			return $this->redirect()->toRoute('town');
 		}
 		
 		// Get building type from request
@@ -186,7 +186,7 @@ class TownController extends AbstractActionController {
 		
 		// Redirect if any of the above checks failed
 		if($buildingInProgress || $chosenBuildingIsBuilt || $prerequisitesNotObtained) {
-			return $this->redirect()->toRoute('game/town');
+			return $this->redirect()->toRoute('town');
 		}
 		
 		// Start a building project of the chosen building
@@ -202,7 +202,7 @@ class TownController extends AbstractActionController {
 					'message' => $message
 		)));
 		
-		$view->setTemplate('game/town/index');
+		$view->setTemplate('town/index/index');
 		
 		return $view;
 	}
@@ -238,9 +238,11 @@ class TownController extends AbstractActionController {
 							'message' => $message
 				)));
 				
-				$view->setTemplate('game/town/index');
+				$view->setTemplate('town/index/index');
 				
 				return $view;
+			} else {
+				return $this->redirect()->toRoute('town/index/index');
 			}
 		}
 		
@@ -278,7 +280,7 @@ class TownController extends AbstractActionController {
 	private function getTownBuildingTable() {
 		if (!$this->townBuildingTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->townBuildingTable = $serviceManager->get('Game\Models\TownBuildingTable');
+			$this->townBuildingTable = $serviceManager->get('Town\Model\TownBuildingTable');
 		}
 		return $this->townBuildingTable;
 	}
@@ -286,7 +288,7 @@ class TownController extends AbstractActionController {
 	private function getTownTable() {
 		if (!$this->townTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->townTable = $serviceManager->get('Game\Models\TownTable');
+			$this->townTable = $serviceManager->get('Town\Model\TownTable');
 		}
 		return $this->townTable;
 	}
