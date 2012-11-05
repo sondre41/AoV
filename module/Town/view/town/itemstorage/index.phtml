@@ -1,0 +1,131 @@
+<h2>Gjenstandslager</h2>
+
+<?php
+
+// Print eventual message
+if($this->message) {
+	echo "<div class='message'>" . $this->message . "</div>";
+}
+
+?>
+
+<h3>Inventar i landsbyen</h3>
+
+<?php
+
+// Display the players inventory in this town
+if(count($this->playerTownInventory) <= 0) {
+	echo "Din inventar i denne landsbyen er tom.";
+} else {
+
+?>
+
+<table class="resourceTable">
+<tr>
+
+<?php
+
+	$depositFormAction = $this->url('town', array(
+		'controller' => 'itemstorage',
+		'action' => 'recover',
+		'longitude' => $this->longitude,
+		'latitude' => $this->latitude
+	));
+	
+	$itemsPerRow = 4;
+	$itemsInCurrentRow = 0;
+	foreach($this->playerTownInventory as $item) {
+		if($itemsInCurrentRow == $itemsPerRow) {
+			echo "</tr><tr>\n";
+			$itemsInCurrentRow = 0;
+		}
+		
+		echo "<td class='inventoryResource'>";
+		echo "Resource: " . $item['name'] . "<br>";
+		echo "<img src='" . $this->basePath() . "/images/inventory/" . $item['category'] . "/" . $item['type'] . "/" . $item['name'] . ".jpg" . "' /><br>\n";
+		
+		// Make "recover this item" form
+		echo "<form action='" . $depositFormAction . "' method='post'>\n";
+		echo "<input type='hidden' name='townInventoryID' value='" . $item['townInventoryID'] . "'>\n";
+		echo "<input type='submit' name='depositItem' value='Recover'>\n";
+		echo "</form>\n";
+		
+		echo "</td>\n";
+		
+		$itemsInCurrentRow++;
+	}
+
+?>
+
+</tr>
+</table>
+
+<?php
+
+}
+
+?>
+
+<h3>Inventar</h3>
+
+<?php
+
+// Display the players inventory
+if(count($this->playerInventory) <= 0) {
+	echo "Din inventar er tom.";
+} else {
+
+?>
+
+<table class="resourceTable">
+<tr>
+
+<?php
+
+	$depositFormAction = $this->url('town', array(
+		'controller' => 'itemstorage',
+		'action' => 'deposit',
+		'longitude' => $this->longitude,
+		'latitude' => $this->latitude
+	));
+	
+	$itemsPerRow = 4;
+	$itemsInCurrentRow = 0;
+	foreach($this->playerInventory as $item) {
+		if($itemsInCurrentRow == $itemsPerRow) {
+			echo "</tr><tr>\n";
+			$itemsInCurrentRow = 0;
+		}
+		
+		echo "<td class='inventoryResource'>";
+		echo "Resource: " . $item['name'] . "<br>";
+		echo "<img src='" . $this->basePath() . "/images/inventory/" . $item['category'] . "/" . $item['type'] . "/" . $item['name'] . ".jpg" . "' /><br>\n";
+		
+		// Make "deposit this item" form
+		echo "<form action='" . $depositFormAction . "' method='post'>\n";
+		echo "<input type='hidden' name='inventoryID' value='" . $item['inventoryID'] . "'>\n";
+		echo "<input type='submit' name='depositItem' value='Deposit'>\n";
+		echo "</form>\n";
+		
+		echo "</td>\n";
+		
+		$itemsInCurrentRow++;
+	}
+
+?>
+
+</tr>
+</table>
+
+<?php
+
+}
+
+$backUrl = $this->url('town', array(
+	'longitude' => $this->longitude,
+	'latitude' => $this->latitude
+));
+
+?>
+
+<br><br><a href='<?php echo $backUrl; ?>'>Tilbake til landsby</a>

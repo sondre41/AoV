@@ -167,7 +167,7 @@ class MapController extends AbstractActionController {
     private function getMapTable() {
     	if (!$this->mapTable) {
     		$serviceManager = $this->getServiceLocator();
-    		$this->mapTable = $serviceManager->get('Game\Models\MapTable');
+    		$this->mapTable = $serviceManager->get('Game\Model\MapTable');
     	}
     	return $this->mapTable;
     }
@@ -175,7 +175,7 @@ class MapController extends AbstractActionController {
     private function getPlayerTable() {
     	if (!$this->playerTable) {
     		$serviceManager = $this->getServiceLocator();
-    		$this->playerTable = $serviceManager->get('Game\Models\PlayerTable');
+    		$this->playerTable = $serviceManager->get('Game\Model\PlayerTable');
     	}
     	return $this->playerTable;
     }
@@ -183,7 +183,7 @@ class MapController extends AbstractActionController {
     private function getTownTable() {
     	if (!$this->townTable) {
     		$serviceManager = $this->getServiceLocator();
-    		$this->townTable = $serviceManager->get('Game\Models\TownTable');
+    		$this->townTable = $serviceManager->get('Town\Model\TownTable');
     	}
     	return $this->townTable;
     }

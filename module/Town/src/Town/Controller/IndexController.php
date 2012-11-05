@@ -2,16 +2,10 @@
 
 namespace Town\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
+use Game\Controller\GameController;
 use Zend\View\Model\ViewModel;
 
-class IndexController extends AbstractActionController {
-	protected $inventoryModel;
-	protected $inventoryTable;
-	protected $playerTable;
-	protected $townBuildingTable;
-	protected $townTable;
-	
+class IndexController extends GameController {
 	public function indexAction() {
 		// Get coordinates from the request
 		$longitude = $this->params()->fromRoute('longitude', false);
@@ -19,11 +13,20 @@ class IndexController extends AbstractActionController {
 		 
 		// Coordinates are required
 		if(!$longitude || !$latitude) {
-			return $this->redirect()->toRoute('game/map');
+			// If coordinates are not given, try to find the default town for this user
+			$town = $this->getTownTable()->getPlayersDefaultTown(1);
+			
+			// Set coordinates
+			if($town) {
+				$longitude = $town->longitude;
+				$latitude = $town->latitude;
+			}
 		}
 		
-		// Get town statistics
-		$town = $this->getTownTable()->getTown($longitude, $latitude);
+		// Get town statistics if not already gotten above
+		if(!isset($town)) {
+			$town = $this->getTownTable()->getTown($longitude, $latitude);
+		}
 		if(!$town) {
 			return $this->redirect()->toRoute('game/map');
 		}
@@ -113,7 +116,7 @@ class IndexController extends AbstractActionController {
 					'message' => $message
 		)));
 		
-		$view->setTemplate('town/town/index');
+		$view->setTemplate('town/index/index');
 		
 		return $view;
 	}
@@ -250,47 +253,6 @@ class IndexController extends AbstractActionController {
 			'longitude' => $longitude,
 			'latitude' => $latitude
 		);
-	}
-
-	
-	private function getInventoryModel() {
-		if (!$this->inventoryModel) {
-			$serviceManager = $this->getServiceLocator();
-			$this->inventoryModel = $serviceManager->get('Game\Models\InventoryModel');
-		}
-		return $this->inventoryModel;
-	}
-	
-	private function getInventoryTable() {
-		if (!$this->inventoryTable) {
-			$serviceManager = $this->getServiceLocator();
-			$this->inventoryTable = $serviceManager->get('Game\Models\InventoryTable');
-		}
-		return $this->inventoryTable;
-	}
-	
-	private function getPlayerTable() {
-		if (!$this->playerTable) {
-			$serviceManager = $this->getServiceLocator();
-			$this->playerTable = $serviceManager->get('Game\Models\PlayerTable');
-		}
-		return $this->playerTable;
-	}
-	
-	private function getTownBuildingTable() {
-		if (!$this->townBuildingTable) {
-			$serviceManager = $this->getServiceLocator();
-			$this->townBuildingTable = $serviceManager->get('Town\Model\TownBuildingTable');
-		}
-		return $this->townBuildingTable;
-	}
-	
-	private function getTownTable() {
-		if (!$this->townTable) {
-			$serviceManager = $this->getServiceLocator();
-			$this->townTable = $serviceManager->get('Town\Model\TownTable');
-		}
-		return $this->townTable;
 	}
 }
 

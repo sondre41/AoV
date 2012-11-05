@@ -15,11 +15,13 @@ echo "Posisjon: " . $town->longitude . ", " . $town->latitude . "<br/>";
 // Level
 echo "Nivå: " . count($this->completedBuildings) . "<br/>";
 
-// Resources
-echo "<h3>Resurser</h3>";
-echo "Plank: " . $town->lumber . "<br/>";
-echo "Stein: " . $town->stone . "<br/>";
-echo "Tre: " . $town->log . "<br/>";
+if($this->townHasStorage) {
+	// Resources
+	echo "<h3>Resurser</h3>";
+	echo "Plank: " . $town->lumber . "<br/>";
+	echo "Stein: " . $town->stone . "<br/>";
+	echo "Tre: " . $town->log . "<br/>";
+}
 
 // Completed buildings
 
@@ -33,22 +35,49 @@ echo "Tre: " . $town->log . "<br/>";
 if(count($this->completedBuildings) > 0) {
 	foreach($this->completedBuildings as $building) {
 		switch($building) {
-			case 'blacksmith':
+			case 'resource storage':
 				$url = $this->url('town', array(
-						'controller' => 'blacksmith',
+					'controller' => 'resourcestorage',
+					'longitude' => $this->longitude,
+					'latitude' => $this->latitude
+				));
+				echo "<a href='" . $url . "'>Resurslager</a><br/>";
+				break;
+			
+			case 'item storage':
+				$url = $this->url('town', array(
+					'controller' => 'itemstorage',
+					'longitude' => $this->longitude,
+					'latitude' => $this->latitude
+				));
+				echo "<a href='" . $url . "'>Gjenstandslager</a><br/>";
+				break;
+				
+			case 'saw buck':
+				$url = $this->url('town', array(
+						'controller' => 'saw-buck',
 						'longitude' => $this->longitude,
 						'latitude' => $this->latitude
+				));
+				echo "<a href='" . $url . "'>Sagebukk</a><br/>";
+				break;
+				
+			case 'blacksmith':
+				$url = $this->url('town', array(
+					'controller' => 'blacksmith',
+					'longitude' => $this->longitude,
+					'latitude' => $this->latitude
 				));
 				echo "<a href='" . $url . "'>Smed</a><br/>";
 				break;
-				
-			case 'resource storage':
+			
+			case 'iron melting works':
 				$url = $this->url('town', array(
-						'controller' => 'storage',
+						'controller' => 'iron-melting-works',
 						'longitude' => $this->longitude,
 						'latitude' => $this->latitude
 				));
-				echo "<a href='" . $url . "'>Resurslager</a><br/>";
+				echo "<a href='" . $url . "'>Jernsmelteverk</a><br/>";
 				break;
 		}
 	}
@@ -60,7 +89,7 @@ $buildingTreeUrl = $this->url('town', array(
 		'longitude' => $this->longitude,
 		'latitude' => $this->latitude
 ));
-echo "<br /><a href='" . $buildingTreeUrl . "'>Bygningstre</a>";
+echo "<p><br><a href='" . $buildingTreeUrl . "'>Bygningstre</a></p>";
 
 // Uncompleted building
 
@@ -94,7 +123,7 @@ if($this->uncompletedBuilding) {
 		'latitude' => $this->latitude
 	));
 	
-	echo "<br /><br /><a href='" . $stopBuildingUrl . "'>Stopp bygningsprosjektet</a>";
+	echo "<br /><br /><p><a href='" . $stopBuildingUrl . "'>Stopp bygningsprosjektet</a></p>";
 	
 	echo "<h4>Bygg på bygningsprosjekt</h4>";
 	
@@ -171,6 +200,7 @@ if($this->uncompletedBuilding) {
 		
 		} else {
 			echo "Det finnes ikke mer av de nødvendige bygningsresursene i landsbyen.";
+			echo "<br /><br />";
 		}
 	}
 	
@@ -206,52 +236,51 @@ if($this->uncompletedBuilding) {
 	
 		?>
 			
-			<form action='<?php echo $buildUrl; ?>' method='POST'>
-			<input type='hidden' name='resourceContainer' value='inventory'>
-			
-			<?php
-			
-			if($treeCheck) {
-			
-				?>
-				
-				<input type='submit' name='buildSubmit' value='Lumber'>
-				
-				<?php
-			
-			}
-			
-			if($stoneCheck) {
-			
-				?>
-				
-				<input type='submit' name='buildSubmit' value='Stone'>
-				
-				<?php
-			
-			}
-			
-			if($logCheck) {
-			
-				?>
-				
-				<input type='submit' name='buildSubmit' value='Log'>
-				
-				<?php
-					
-			}
-			
+		<form action='<?php echo $buildUrl; ?>' method='POST'>
+		<input type='hidden' name='resourceContainer' value='inventory'>
+		
+		<?php
+		
+		if($treeCheck) {
+		
 			?>
 			
-			</form>
+			<input type='submit' name='buildSubmit' value='Lumber'>
 			
 			<?php
 		
-		} else {
-			echo "Du har ikke mer av de nødvendige bygningsresursene i din inventar.";
 		}
-} else {
+		
+		if($stoneCheck) {
+		
+			?>
+			
+			<input type='submit' name='buildSubmit' value='Stone'>
+			
+			<?php
+		
+		}
+		
+		if($logCheck) {
+		
+			?>
+			
+			<input type='submit' name='buildSubmit' value='Log'>
+			
+			<?php
+				
+		}
+		
+		?>
+		
+		</form>
+		
+		<?php
 	
+	} else {
+		echo "Du har ikke mer av de nødvendige bygningsresursene i din inventar.";
+	}
+} else {
 	echo "Denne landsbyen kan <a href='" . $buildingTreeUrl . "'>starte et nytt bygningsprosjekt</a>.";
 }
 

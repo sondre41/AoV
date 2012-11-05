@@ -1,0 +1,86 @@
+<h2>Landsbyens lager</h2>
+
+<?php
+
+// Print eventual message
+if($this->message) {
+	echo "<div class='message'>" . $this->message . "</div>";
+}
+
+?>
+
+<h3>Resurser i landsbyen</h3>
+
+<?php
+
+echo "Plank: " . $town->lumber . "<br/>";
+echo "Stein: " . $town->stone . "<br/>";
+echo "Tre: " . $town->log . "<br/>";
+
+?>
+
+<h3>Resurser i din inventar</h3>
+
+<?php
+
+if(count($this->inventoryItems) <= 0) {
+	echo "Du har ingen resurser i din inventar som kan legges i landsbyens langer.";
+} else {
+
+?>
+
+NB! Når du har valgt å legge fra deg en resurs i landsbyen kan den ikke tas tilbake til din inventar senere.<br>
+Resursen vil forbli i landsbyens lager inntil den benyttes til bygging eller produksjon i landsbyen.
+
+<table class="resourceTable">
+<tr>
+
+<?php
+
+	$depositFormAction = $this->url('town', array(
+		'controller' => 'resourcestorage',
+		'action' => 'deposit',
+		'longitude' => $this->longitude,
+		'latitude' => $this->latitude
+	));
+	
+	$itemsPerRow = 4;
+	$itemsInCurrentRow = 0;
+	foreach($this->inventoryItems as $item) {
+		if($itemsInCurrentRow == $itemsPerRow) {
+			echo "</tr><tr>\n";
+			$itemsInCurrentRow = 0;
+		}
+		
+		echo "<td class='inventoryResource'>";
+		echo "Resource: " . $item['name'] . "<br>";
+		echo "<img src='" . $this->basePath() . "/images/inventory/" . $item['category'] . "/" . $item['type'] . "/" . $item['name'] . ".jpg" . "' /><br>\n";
+		
+		// Make "deposit this item" form
+		echo "<form action='" . $depositFormAction . "' method='post'>\n";
+		echo "<input type='hidden' name='inventoryID' value='" . $item['inventoryID'] . "'>\n";
+		echo "<input type='submit' name='depositItem' value='Deposit'>\n";
+		echo "</form>\n";
+		
+		echo "</td>\n";
+		
+		$itemsInCurrentRow++;
+	}
+
+?>
+
+</tr>
+</table>
+
+<?php
+
+}
+
+$backUrl = $this->url('town', array(
+	'longitude' => $this->longitude,
+	'latitude' => $this->latitude
+));
+
+?>
+
+<br><br><a href='<?php echo $backUrl; ?>'>Tilbake til landsby</a>

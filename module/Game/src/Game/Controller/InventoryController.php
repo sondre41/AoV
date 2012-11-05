@@ -11,7 +11,7 @@ class InventoryController extends AbstractActionController {
 	protected $inventoryModel;
 	protected $inventoryTable;
 	
-	public function indexAction() {
+	public function indexAction() {	
 		return array('inventoryItems' => $this->getInventoryModel()->getPlayerInventory(1)->toArray());
 	}
 	
@@ -111,7 +111,7 @@ class InventoryController extends AbstractActionController {
 	private function getPlayerModel() {
 		if (!$this->playerModel) {
 			$serviceManager = $this->getServiceLocator();
-			$this->playerModel = $serviceManager->get('Game\Models\PlayerModel');
+			$this->playerModel = $serviceManager->get('Game\Model\PlayerModel');
 		}
 		return $this->playerModel;
 	}
@@ -119,7 +119,7 @@ class InventoryController extends AbstractActionController {
 	private function getPlayerTable() {
 		if (!$this->playerTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->playerTable = $serviceManager->get('Game\Models\PlayerTable');
+			$this->playerTable = $serviceManager->get('Game\Model\PlayerTable');
 		}
 		return $this->playerTable;
 	}
@@ -127,7 +127,7 @@ class InventoryController extends AbstractActionController {
 	private function getInventoryModel() {
 		if (!$this->inventoryModel) {
 			$serviceManager = $this->getServiceLocator();
-			$this->inventoryModel = $serviceManager->get('Game\Models\InventoryModel');
+			$this->inventoryModel = $serviceManager->get('Game\Model\InventoryModel');
 		}
 		return $this->inventoryModel;
 	}
@@ -135,7 +135,7 @@ class InventoryController extends AbstractActionController {
 	private function getInventoryTable() {
 		if (!$this->inventoryTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->inventoryTable = $serviceManager->get('Game\Models\InventoryTable');
+			$this->inventoryTable = $serviceManager->get('Game\Model\InventoryTable');
 		}
 		return $this->inventoryTable;
 	}

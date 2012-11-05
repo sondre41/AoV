@@ -70,7 +70,7 @@ class MapsquareController extends AbstractActionController {
 	private function getMapTable() {
 		if (!$this->mapTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->mapTable = $serviceManager->get('Game\Models\MapTable');
+			$this->mapTable = $serviceManager->get('Game\Model\MapTable');
 		}
 		return $this->mapTable;
 	}
@@ -78,7 +78,7 @@ class MapsquareController extends AbstractActionController {
 	private function getPlayerTable() {
 		if (!$this->playerTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->playerTable = $serviceManager->get('Game\Models\PlayerTable');
+			$this->playerTable = $serviceManager->get('Game\Model\PlayerTable');
 		}
 		return $this->playerTable;
 	}
@@ -86,7 +86,7 @@ class MapsquareController extends AbstractActionController {
 	private function getItemTable() {
 		if (!$this->itemTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->itemTable = $serviceManager->get('Game\Models\ItemTable');
+			$this->itemTable = $serviceManager->get('Game\Model\ItemTable');
 		}
 		return $this->itemTable;
 	}
@@ -94,7 +94,7 @@ class MapsquareController extends AbstractActionController {
 	private function getInventoryTable() {
 		if (!$this->inventoryTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->inventoryTable = $serviceManager->get('Game\Models\InventoryTable');
+			$this->inventoryTable = $serviceManager->get('Game\Model\InventoryTable');
 		}
 		return $this->inventoryTable;
 	}
@@ -102,7 +102,7 @@ class MapsquareController extends AbstractActionController {
 	private function getInventoryModel() {
 		if (!$this->inventoryModel) {
 			$serviceManager = $this->getServiceLocator();
-			$this->inventoryModel = $serviceManager->get('Game\Models\InventoryModel');
+			$this->inventoryModel = $serviceManager->get('Game\Model\InventoryModel');
 		}
 		return $this->inventoryModel;
 	}

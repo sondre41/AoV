@@ -2,18 +2,17 @@
 
 namespace Town\Model;
 
-use Zend\Db\Adapter\Adapter;
-use Zend\Db\TableGateway\AbstractTableGateway;
+use Zend\Db\TableGateway\TableGateway;
 use Zend\Db\Sql\Expression;
 use Zend\ServiceManager\ServiceManager;
 
-class TownTable extends AbstractTableGateway {
-	protected $table = 'town';
+class TownTable {
+	protected $tableGateway;
 	protected $serviceManager;
 	
-	public function __construct(Adapter $adapter, ServiceManager $serviceManager) {
-		// Set DB adapter
-		$this->adapter = $adapter;
+	public function __construct(TableGateway $tableGateway, ServiceManager $serviceManager) {
+		// Set table gateway
+		$this->tableGateway = $tableGateway;
 		
 		// Set service manager
 		$this->serviceManager = $serviceManager;
@@ -21,7 +20,7 @@ class TownTable extends AbstractTableGateway {
 	
 	public function createTown($longitude, $latitude, $owner) {
 		// Insert new row in the table
-		$townID = $this->insert(array(
+		$townID = $this->tableGateway->insert(array(
 			'longitude' => $longitude,
 			'latitude' => $latitude,
 			'owner' => $owner
@@ -33,7 +32,7 @@ class TownTable extends AbstractTableGateway {
 	}
 
 	public function getTown($longitude, $latitude) {
-		$rowset = $this->select(array(
+		$rowset = $this->tableGateway->select(array(
 			'longitude' => $longitude,
 			'latitude' => $latitude
 		));
@@ -45,9 +44,36 @@ class TownTable extends AbstractTableGateway {
 		}
 		return false;
 	}
+	
+	public function getPlayersDefaultTown($owner) {
+		$rowset = $this->tableGateway->select(array(
+			'owner' => $owner
+		));
+		
+		if($rowset->count() > 0) {
+			if($rowset->count() == 1) {
+				return $rowset->current();
+			} else {
+				foreach($rowset as $row) {
+					if($row->default == 1) {
+						return $row;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	public function incrementAvailableResources($resourceType, $townID) {
+		$this->tableGateway->update(array(
+			$resourceType => new Expression("($resourceType + 1)")
+		), array(
+			'townID' => $townID
+		));
+	}
 
 	public function playerOwnsTown($playerID) {
-		$rowset = $this->select(array('owner' => $playerID));
+		$rowset = $this->tableGateway->select(array('owner' => $playerID));
 		
 		if($rowset->current()) {
 			return true;
@@ -56,7 +82,7 @@ class TownTable extends AbstractTableGateway {
 	}
 
 	public function reduceAvailableResources($resourceType, $townID) {
-		$this->update(array(
+		$this->tableGateway->update(array(
 			$resourceType => new Expression("($resourceType - 1)")
 		), array(
 			'townID' => $townID

@@ -1,6 +1,6 @@
 <?php
 
-namespace Game\Models;
+namespace Game\Model;
 
 class Item {
 	public $itemID;

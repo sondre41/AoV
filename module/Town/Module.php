@@ -2,13 +2,17 @@
 
 namespace Town;
 
-use Town\Model\TownTable;
 use Town\Model\TownBuildingTable;
+use Town\Model\TownInventoryModel;
+use Town\Model\TownTable;
 
 // Zend
+use Zend\Db\TableGateway\TableGateway;
 use Zend\ModuleManager\ModuleManager;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
+
+use Zend\Mvc\Controller\ControllerManager;
 
 class Module
 {	
@@ -31,15 +35,28 @@ class Module
     public function getServiceConfig() {
     	return array(
     		'factories' => array(
-    			'Town\Model\TownTable' => function($serviceManager) {
-	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
-	    			
-	    			return new TownTable($databaseAdapter, $serviceManager);
-    			},
+    			// Models
+    			// TownBuildingTable
     			'Town\Model\TownBuildingTable' => function($serviceManager) {
-	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
-	    			
-	    			return new TownBuildingTable($databaseAdapter);
+    				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+    				
+    				return new TownBuildingTable($databaseAdapter);
+    			},
+    			
+    			// TownInventoryModel
+    			'Town\Model\TownInventoryModel' => function($serviceManager) {
+    				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+    				$tableGateway = new TableGateway('towninventory', $databaseAdapter);
+    				
+    				return new TownInventoryModel($databaseAdapter, $tableGateway);
+    			},
+    			
+    			// TownTable
+    			'Town\Model\TownTable' => function($serviceManager) {
+    				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+	    			$tableGateway = new TableGateway('town', $databaseAdapter);
+    				
+	    			return new TownTable($tableGateway, $serviceManager);
     			}
     		)
     	);

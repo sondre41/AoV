@@ -2,15 +2,13 @@
 
 namespace Game;
 
-use Game\Models\CityTable;
-use Game\Models\InventoryModel;
-use Game\Models\InventoryTable;
-use Game\Models\ItemTable;
-use Game\Models\MapTable;
-use Game\Models\PlayerModel;
-use Game\Models\PlayerTable;
-use Game\Models\TownTable;
-use Game\Models\TownBuildingTable;
+use Game\Model\CityTable;
+use Game\Model\InventoryModel;
+use Game\Model\InventoryTable;
+use Game\Model\ItemTable;
+use Game\Model\MapTable;
+use Game\Model\PlayerModel;
+use Game\Model\PlayerTable;
 
 // Zend
 use Zend\ModuleManager\ModuleManager;
@@ -18,7 +16,16 @@ use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 
 class Module
-{	
+{
+// 	public function init(ModuleManager $moduleManager)
+// 	{
+// 		$sharedEvents = $moduleManager->getEventManager()->getSharedManager();
+// 		$sharedEvents->attach('__NAMESPACE__', '*', function($e) {
+// 			// This event will only be fired when an ActionController under the MyModule namespace is dispatched.
+// 			echo "Init dispatch event<br>";
+// 		}, -100);
+// 	}
+	
     public function getConfig()
     {
         return include __DIR__ . '/config/module.config.php';
@@ -38,45 +45,35 @@ class Module
     public function getServiceConfig() {
     	return array(
     		'factories' => array(
-    			'Game\Models\MapTable' => function($serviceManager) {
+    			'Game\Model\MapTable' => function($serviceManager) {
     				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
     				
     				return new MapTable($databaseAdapter);
     			},
-    			'Game\Models\PlayerTable' => function($serviceManager) {
+    			'Game\Model\PlayerTable' => function($serviceManager) {
     				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
     				
     				return new PlayerTable($databaseAdapter);
     			},
-    			'Game\Models\ItemTable' => function($serviceManager) {
+    			'Game\Model\ItemTable' => function($serviceManager) {
     				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
     				
     				return new ItemTable($databaseAdapter);
     			},
-    			'Game\Models\InventoryTable' => function($serviceManager) {
+    			'Game\Model\InventoryTable' => function($serviceManager) {
     				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
     				
     				return new InventoryTable($databaseAdapter);
     			},
-    			'Game\Models\InventoryModel' => function($serviceManager) {
+    			'Game\Model\InventoryModel' => function($serviceManager) {
 	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
 	    			
-	    			return new InventoryModel($databaseAdapter);
+	    			return new InventoryModel($databaseAdapter, $serviceManager);
     			},
-    			'Game\Models\CityTable' => function($serviceManager) {
+    			'Game\Model\CityTable' => function($serviceManager) {
 	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
 	    			
 	    			return new CityTable($databaseAdapter);
-    			},
-    			'Game\Models\TownTable' => function($serviceManager) {
-	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
-	    			
-	    			return new TownTable($databaseAdapter, $serviceManager);
-    			},
-    			'Game\Models\TownBuildingTable' => function($serviceManager) {
-	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
-	    			
-	    			return new TownBuildingTable($databaseAdapter);
     			}
     		)
     	);
@@ -85,56 +82,18 @@ class Module
     public function getControllerConfig() {
     	return array(
     		'factories' => array(
-    			'Game\Controller\Mapsquare' => function($controllers) {
-	    			$serviceManager = $controllers->getServiceLocator();
+    			'Game\Controller\Mapsquare' => function($controllerManager) {
+	    			$serviceManager = $controllerManager->getServiceLocator();
 	    			$eventManager = $serviceManager->get('EventManager');
 	    			$controller = new Controller\MapsquareController();
 	    			
 	    			echo "WTFFFFFF!";
 	    			
-	    			$eventManager->attach('*', function ($e) use ($controller) {
+	    			$eventManager->attach('dispatch', function ($e) use ($controller) {
 	    				echo "hei";
-	    				$request = $e->getRequest();
-	    				$method  = $request->getMethod();
-	    				if (!in_array($method, array('PUT', 'DELETE', 'PATCH'))) {
-	    					// nothing to do
-	    					return;
-	    				}
-	    			
-	    				if ($controller->params()->fromRoute('id', false)) {
-	    					// nothing to do
-	    					return;
-	    				}
-	    			
-	    				// Missing identifier! Redirect.
-	    				return $controller->redirect()->toRoute(/* ... */);
 	    			}, 100); // execute before executing action logic
 	    			
-// 	    			$eventManager->attach(MvcEvent::EVENT_DISPATCH, function($mvcEvent) use($controller) {
-// 	    				echo "<br>WTFFFFFFFFFFFFFFFF!!!!!";
-// 	    				// Get longitude and latitude from request
-// 	    				$longitude = $controller->params()->fromRoute('longitude', false);
-// 	    				$latitude = $controller->params()->fromRoute('latitude', false);
-	    					
-// 	    				if(!$longitude || !$latitude) {
-// 	    					// Redirect to map controller
-// 	    					return $controller->redirect()->toRoute('game', array(
-// 	    							'controller' => 'map'
-// 	    					));
-// 	    				}
-	    				
-// 	    				// Check if mapsquare is in range of player
-// 	    				$player = $controller->getPlayerTable()->getPlayer(1);
-	    				
-// 	    				$longitudeDiff = abs($longitude - $player->longitude);
-// 	    				$latitudeDiff = abs($latitude - $player->latitude);
-// 	    				if($longitudeDiff > 4 || $latitudeDiff > 4) {
-// 	    					// Redirect to map controller
-// 	    					return $controller->redirect()->toRoute('game', array(
-// 	    							'controller' => 'map'
-// 	    					));
-// 	    				}
-// 	    			}, 100); // Execute before controller's action logic
+	    			echo "shallabais";
 	    			
 	    			$controller->setEventManager($eventManager);
 	    			

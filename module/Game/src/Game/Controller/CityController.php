@@ -25,7 +25,7 @@ class CityController extends AbstractActionController {
 	private function getCityTable() {
 		if (!$this->cityTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->cityTable = $serviceManager->get('Game\Models\CityTable');
+			$this->cityTable = $serviceManager->get('Game\Model\CityTable');
 		}
 		return $this->cityTable;
 	}
@@ -33,7 +33,7 @@ class CityController extends AbstractActionController {
 	private function getPlayerTable() {
 		if (!$this->playerTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->playerTable = $serviceManager->get('Game\Models\PlayerTable');
+			$this->playerTable = $serviceManager->get('Game\Model\PlayerTable');
 		}
 		return $this->playerTable;
 	}

@@ -1,0 +1,46 @@
+<h2>Jernsmelteverk</h2>
+
+<?php
+
+// Print eventual message
+if($this->message) {
+	echo "<div class='message'>" . $this->message . "</div>";
+}
+
+?>
+
+Jernmalm: <?php echo $this->nrOfIronOre; ?><br>
+Jern: <?php echo $this->nrOfIron; ?>
+
+<h3>Smelt jernmalm</h3>
+
+<?php
+
+if($this->nrOfIronOre > 0) {
+	$meltFormAction = $this->url('town', array(
+		'controller' => 'iron-melting-works',
+		'action' => 'melt',
+		'longitude' => $this->longitude,
+		'latitude' => $this->latitude
+	));
+
+?>
+
+<form action='<?php echo $meltFormAction; ?>' method='POST'>
+<input type='submit' value='Smelt jernmalm'>
+</form>
+
+<?php
+
+} else {
+	echo "Du har ikke noe jernmalm i din inventar som kan smeltes.";
+}
+
+$backUrl = $this->url('town', array(
+	'longitude' => $this->longitude,
+	'latitude' => $this->latitude
+));
+
+?>
+
+<br><br><a href='<?php echo $backUrl; ?>'>Tilbake til landsby</a>

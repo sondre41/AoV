@@ -15,7 +15,7 @@ class StoreController extends AbstractActionController {
 	private function getInventoryTable() {
 		if (!$this->inventoryTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->inventoryTable = $serviceManager->get('Game\Models\InventoryTable');
+			$this->inventoryTable = $serviceManager->get('Game\Model\InventoryTable');
 		}
 		return $this->inventoryTable;
 	}
@@ -23,7 +23,7 @@ class StoreController extends AbstractActionController {
 	private function getItemTable() {
 		if (!$this->itemTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->itemTable = $serviceManager->get('Game\Models\ItemTable');
+			$this->itemTable = $serviceManager->get('Game\Model\ItemTable');
 		}
 		return $this->itemTable;
 	}

@@ -74,7 +74,7 @@ class TraininggroundsController extends AbstractActionController {
 	private function getPlayerTable() {
 		if (!$this->playerTable) {
 			$serviceManager = $this->getServiceLocator();
-			$this->playerTable = $serviceManager->get('Game\Models\PlayerTable');
+			$this->playerTable = $serviceManager->get('Game\Model\PlayerTable');
 		}
 		return $this->playerTable;
 	}

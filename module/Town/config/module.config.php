@@ -24,7 +24,11 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
-            'Town\Controller\Index' => 'Town\Controller\IndexController'
+            'Town\Controller\Index' => 'Town\Controller\IndexController',
+            'Town\Controller\Resourcestorage' => 'Town\Controller\ResourcestorageController',
+            'Town\Controller\Itemstorage' => 'Town\Controller\ItemstorageController',
+            'Town\Controller\SawBuck' => 'Town\Controller\SawBuckController',
+            'Town\Controller\IronMeltingWorks' => 'Town\Controller\IronMeltingWorksController'
         ),
     ),
     'view_manager' => array(

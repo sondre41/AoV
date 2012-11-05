@@ -30,7 +30,6 @@ div.errorMessage {
 /* Individual Page Styles
 /*****************************************************/
 
-
 /***** Map *****/
 table.mapTable {
 	border: 1px solid black;
@@ -316,4 +315,14 @@ div.steel_melting_works {
 	top: 600px;
 	left: 300px;
 	padding: 10px;
+}
+
+/***** Storage *****/
+table.resourceTable {
+	
+}
+
+td.inventoryResource {
+	border: 1px solid black;
+	text-align: center;
 }
