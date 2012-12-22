@@ -2,13 +2,15 @@
 
 namespace Town\Controller;
 
-use Game\Controller\GameController;
 use Zend\EventManager\EventManagerInterface;
 
-class BuildingController extends GameController {
+use Game\Controller\MapSquareController;
+
+class BuildingController extends MapSquareController {
+	protected $type = 'town';
+	protected $alwaysViewable = true;
+	
 	protected $buildingType;
-	protected $latitude;
-	protected $longitude;
 	protected $town;
 	
 	public function setEventManager(EventManagerInterface $eventManager)
@@ -23,20 +25,18 @@ class BuildingController extends GameController {
 	}
 	
     public function init() {
-    	// Get coordinates from the request
-		$longitude = $this->longitude = $this->params()->fromRoute('longitude', false);
-		$latitude = $this->latitude = $this->params()->fromRoute('latitude', false);
-			
-		// Coordinates are required
-		if(!$longitude || !$latitude) {
-			return $this->redirect()->toRoute('town');
-		}
+    	parent::init();
+    	
+    	// Player must be in the town to be able to visit the buildings
+    	if(! $this->isPlayerOnSquare) {
+    		return $this->redirect()->toRoute('game');
+    	}
 		
 		// Check that the town actually has the requested building built
 		$town = $this->reloadTown();
 		$hasItemStorage = $this->getTownBuildingTable()->townHasBuilding($this->buildingType, $town->townID);
 		if(!$hasItemStorage) {
-			return $this->redirect()->toRoute('town/' . $longitude . '/' . $latitude);
+			return $this->redirect()->toRoute('town/' . $this->longitude . '/' . $this->latitude);
 		}
     }
     

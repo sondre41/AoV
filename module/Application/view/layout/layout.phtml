@@ -33,9 +33,14 @@
           <a class="brand" href="<?php echo $this->url('home') ?>">Age of Vikings</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="<?php echo $this->url('home') ?>"><?php echo $this->translate('Home') ?></a></li>
-              <li class="active"><a href="<?php echo $this->url('game') ?>"><?php echo $this->translate('Map') ?></a></li>
-              <li class="active"><a href="<?php echo $this->url('town') ?>"><?php echo $this->translate('Town') ?></a></li>
+              <li class="active"><a href="<?php echo $this->url('application', array('controller' => 'auth')); ?>"><?php echo $this->translate('Logg inn'); ?></a></li>
+              <li class="active"><a href="<?php echo $this->url('game'); ?>"><?php echo $this->translate('Map'); ?></a></li>
+              <li class="active"><a href="<?php echo $this->url('game', array('controller' => 'inventory')); ?>"><?php echo $this->translate('Inventory'); ?></a></li>
+              <li class="active"><a href="<?php echo $this->url('town'); ?>"><?php echo $this->translate('Town'); ?></a></li>
+              <li class="active"><a href="<?php echo $this->url('game', array('controller' => 'quest')); ?>"><?php echo $this->translate('Quest'); ?></a></li>
+              <li class="active"><a href="<?php echo $this->url('message'); ?>"><?php echo $this->translate('Mail'); ?></a></li>
+              <li class="active"><a href="<?php echo $this->url('guild'); ?>"><?php echo $this->translate('Guild'); ?></a></li>
+              <li class="active"><a href="<?php echo $this->url('application', array('controller' => 'auth', 'action' => 'logout')); ?>"><?php echo $this->translate('Logg ut'); ?></a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>

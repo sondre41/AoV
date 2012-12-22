@@ -26,16 +26,40 @@ class PlayerTable extends AbstractTableGateway {
 		$this->initialize();
 	}
 	
+	// Create a new player
+	public function createPlayer($data) {
+		$this->insert(array(
+			'email' => $data['email'],
+			'username' => $data['username'],
+			'password' => $data['password']
+		));
+	}
+	
 	// Get a specific player from DB
 	public function getPlayer($playerID) {
 		$rowset = $this->select(array('playerID' => $playerID));
+		
 		$row = $rowset->current();
-	
-		if (!$row) {
-			throw new \Exception("No player with $playerID could be found.");
+		if (! $row) {
+			throw new \Exception("No player with the ID of $playerID could be found.");
 		}
 	
 		return $row;
+	}
+	
+	public function getPlayerByUsername($username) {
+		$rowset = $this->select(array('username' => $username));
+		
+		$row = $rowset->current();
+		if(! $row) {
+			throw new \Exception("No player with the username $username could be found.");
+		}
+		
+		return $row;
+	}
+	
+	public function getPlayersInGuild($guildID) {
+		return $this->select(array('guildID' => $guildID));
 	}
 	
 	// Get all players within a specific position range
@@ -80,9 +104,16 @@ class PlayerTable extends AbstractTableGateway {
 	}
 	
 	// Move a specific player to a new position
-	public function movePlayer($newLongitude, $newLatitude) {
-		$this->update(array('longitude' => $newLongitude,
-							'latitude' => $newLatitude));
+	public function movePlayer($playerID, $newLongitude, $newLatitude) {
+		$this->update(
+			array(
+				'longitude' => $newLongitude,
+				'latitude' => $newLatitude
+			),
+			array(
+				'playerID' => $playerID
+			)
+		);
 	}
 	
 	// Set the actionsBlocked time for a specific player

@@ -16,7 +16,7 @@ class Player extends RowGateway {
 		}
 	}
 	
-	public function isActionsBlocked() {
+	public function areActionsBlocked() {
 		if($this->actionsBlockedTime() > 0) {
 			return true;
 		}

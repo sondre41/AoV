@@ -8,6 +8,24 @@
 /* Library Styles
 /*****************************************************/
 
+div.message {
+	width: 500px;
+	margin: 0px 0px 10px 0px;
+	padding: 5px;
+	font-size: 1.1em;
+	border: 1px solid green;
+	background-color: #aaffaa;
+}
+
+div.notice {
+	width: 500px;
+	margin: 0px 0px 10px 0px;
+	padding: 5px;
+	font-size: 1.1em;
+	border: 1px solid green;
+	background-color: yellow;
+}
+
 div.errorMessage {
 	width: 500px;
 	background-image: url("../images/error.png");
@@ -68,6 +86,9 @@ table.mapTable td.city {
 table.mapTable td.town {
 	background-image: url("../images/map/town.jpg");
 }
+table.mapTable td.fort {
+	background-image: url("../images/map/fort.jpg");
+}
 
 table.mapTable td.navigation {
 	border-width: 0px;
@@ -80,8 +101,22 @@ table.mapTable td a.changePosition {
 	height: 100%;
 }
 
+table.mapTable td a.faded {
+	opacity: 0.6;
+	filter: alpha(opacity=60);
+}
+
 table.mapTable td img {
 	margin-top: 5px;
+}
+
+table.mapTable td img.traveling {
+	opacity: 0.6;
+	filter: alpha(opacity=60);
+}
+
+table.mapTable td a img {
+	margin-top: 17px;
 }
 
 /***** Inventory *****/
@@ -156,15 +191,6 @@ div.feet {
 #submitContainer {
 	text-align: center;
 	margin-top: 15px;
-}
-
-div.message {
-	width: 500px;
-	margin: 0px 0px 10px 0px;
-	padding: 5px;
-	font-size: 1.1em;
-	border: 1px solid green;
-	background-color: #aaffaa;
 }
 
 div.totalWeight {

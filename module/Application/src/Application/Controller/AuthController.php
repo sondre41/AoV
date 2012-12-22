@@ -12,6 +12,13 @@ use Application\Form\InputFilter\AuthFormInputFilter;
 class AuthController extends AbstractActionController {
 	// Create and display login form
     public function indexAction() {
+    	// Instantiate the authentication service
+    	$auth = new AuthenticationService();
+    	 
+    	if($auth->hasIdentity()) {
+    		return $this->redirect()->toRoute('game');
+    	}
+    	
         return array(
         	'form' => new AuthForm()
         );
@@ -19,6 +26,13 @@ class AuthController extends AbstractActionController {
     
     // Authenticate the user based on the submited form values
     public function authAction() {
+    	// Instantiate the authentication service
+    	$auth = new AuthenticationService();
+    	
+    	if($auth->hasIdentity()) {
+    		return $this->redirect()->toRoute('game');
+    	}
+    	
     	// Validate the form data
     	$form = new AuthForm();
     	$form->setInputFilter(new AuthFormInputFilter());
@@ -47,9 +61,6 @@ class AuthController extends AbstractActionController {
 	    	$authAdapter->setIdentity($username)
 	    				->setCredential($password);
 	    	
-	    	// Instantiate the authentication service
-	    	$auth = new AuthenticationService();
-	    	
 	    	// Attempt authentication, saving the result
 	    	$result = $auth->authenticate($authAdapter);
 	    	
@@ -67,11 +78,23 @@ class AuthController extends AbstractActionController {
 	    		$storage->write($authAdapter->getResultRowObject(null, 'password'));
 	    		
 	    		// Redirect to the map page
-	    		return $this->redirect()->toRoute('map/index');
+	    		return $this->redirect()->toRoute('game');
 	    	}
     	}
     	
     	return $view;
+    }
+    
+    public function logoutAction() {
+    	$auth = new AuthenticationService();
+    	
+    	if(! $auth->hasIdentity()) {
+    		return $this->redirect()->toRoute('application', array(
+    			'controller' => 'auth'
+    		));
+    	}
+    	
+    	$auth->clearIdentity();
     }
 }
 

@@ -2,21 +2,16 @@
 
 namespace Game\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
-class MapController extends AbstractActionController {
-	protected $mapTable;
-	protected $playerTable;
-	protected $townTable;
-	
-    public function indexAction() {
+class MapController extends GameController {
+    public function indexAction($moveToSquare = false) {
     	// Get center map coordinates from the request
     	$centerLongitude = $this->params()->fromRoute('longitude', false);
     	$centerLatitude = $this->params()->fromRoute('latitude', false);
     	
     	// Get player information
-    	$player = $this->getPlayerTable()->getPlayer(1);
+    	$player = $this->getPlayerTable()->getPlayer($this->playerId);
     	
     	// Set map constants
     	$mapHeight = $mapWidth = 100;
@@ -35,18 +30,54 @@ class MapController extends AbstractActionController {
     		$latitude = $this->getCenteredLatitude($centerLatitude, $mapPartWidth, $mapWidth);
     	}
     	
+    	// Get info about the map squares to be displayed and get info about eventual players positioned on those squares
+    	$mapSquares = $this->getMapTable()->getMapPart($mapPartHeight, $mapPartWidth, $longitude, $latitude);
+    	$players = $this->getPlayerTable()->getPlayersInPositionRange($mapPartHeight, $mapPartWidth, $longitude, $latitude)->toArray();
+    	
+    	// Check for player traveling
+    	if($player->areActionsBlocked() && $player->action == 'traveling') {
+    		$playerIsTraveling = true;
+    		
+    		$minutes = floor($player->actionsBlockedTime() / 60);
+    		$seconds = $player->actionsBlockedTime() % 60;
+    		
+    		$travelNotice = 'Du er er akkurat nå på reise til en ny rute.<br> Det gjenstår ';
+	    	if($minutes > 0) {
+	    		$travelNotice.= "$minutes minutt";
+	    		if($minutes > 1) {
+	    			$travelNotice.= "er";
+	    		}
+	    	}
+	    	if($minutes > 0 && $seconds > 0) {
+	    		$travelNotice.= " og ";
+	    	}
+	    	if($seconds > 0) {
+	    		$travelNotice.= "$seconds sekund";
+	    		if($seconds > 1) {
+	    			$travelNotice.= "er";
+	    		}
+	    	}
+	    	$travelNotice.= ' av reisen.';
+    	} else {
+    		$playerIsTraveling = false;
+    		$travelNotice = '';
+    	}
+    	
         return array(
-        	'mapSquares' => $this->getMapTable()->getMapPart($mapPartHeight, $mapPartWidth, $longitude, $latitude),
-        	'players' => $this->getPlayerTable()->getPlayersInPositionRange($mapPartHeight, $mapPartWidth, $longitude, $latitude)->toArray(),
-        	'longitude' => $longitude,
-        	'latitude' => $latitude,
+        	'mapSquares' => $mapSquares,
+        	'players' => $players,
         	'centerLongitude' => $centerLongitude,
         	'centerLatitude' => $centerLatitude,
         	'playerLongitude' => $player->longitude,
         	'playerLatitude' => $player->latitude,
         	'mapHeight' => $mapPartHeight,
         	'mapWidth' => $mapPartWidth,
-        	'playerID' => 1
+        	'playerID' => $this->player->playerID,
+        	'moveToSquare' => $moveToSquare,
+        	'playerIsTraveling' => $playerIsTraveling,
+        	'travelNotice' => $travelNotice,
+        	'longitude' => $longitude,
+        	'latitude' => $latitude
         );
     }
     
@@ -61,7 +92,7 @@ class MapController extends AbstractActionController {
     	}
     	
     	// Check whether or not the player has the required amount of gold
-    	$player = $this->getPlayerTable()->getPlayer(1);
+    	$player = $this->getPlayerTable()->getPlayer($this->player->playerID);
     	if($player->gold < 1000) {
     		// Player doesn't have enough gold to buy this square. Redirect to map.
     		$message = "You do not have the necessary amount of gold (1000) to buy this map square.";
@@ -71,7 +102,7 @@ class MapController extends AbstractActionController {
     		$player->save();
     		
     		// Set the player as owner of the square
-    		$this->getMapTable()->setMapSquareOwner($longitude, $latitude, 1);
+    		$this->getMapTable()->setMapSquareOwner($longitude, $latitude, $this->player->playerID);
     		
     		// Give confirmation message
     		$message = "You bought the map square ($longitude, $latitude) successfully.";
@@ -98,7 +129,7 @@ class MapController extends AbstractActionController {
     	}
     	
     	// Check if the player already has a town established
-    	if($this->getTownTable()->playerOwnsTown(1)) {
+    	if($this->getTownTable()->playerOwnsTown($this->player->playerID)) {
     		return $this->redirect()->toRoute('game/map');
     	}
     	
@@ -110,7 +141,7 @@ class MapController extends AbstractActionController {
     	
     	// Register a town at the given coordinates
     	$this->getMapTable()->setMapSquareType($longitude, $latitude, 'town');
-    	$this->getTownTable()->createTown($longitude, $latitude, 1);
+    	$this->getTownTable()->createTown($longitude, $latitude, $this->player->playerID);
     	
     	$message = "Du opprettet en landsby i den valgte ruten ($longitude, $latitude).";
     	
@@ -124,20 +155,121 @@ class MapController extends AbstractActionController {
     	return $view;
     }
     
+    public function moveAction() {
+    	// Get coordinates from the request
+    	$longitude = $this->params()->fromRoute('longitude', false);
+    	$latitude = $this->params()->fromRoute('latitude', false);
+    	 
+    	// Coordinates are required
+    	if(!$longitude || !$latitude) {
+    		return $this->redirect()->toRoute('game/map');
+    	}
+    	
+    	// Check that the player is not currently moving/actions are blocked
+    	$player = $this->getPlayerTable()->getPlayer($this->playerId);
+    	if($player->areActionsBlocked()) {
+    		return $this->redirect()->toRoute('game/map');
+    	}
+    	
+    	// Calculate travel time
+    	$longitudeDiff = abs($player->longitude - $longitude);
+    	$latitudeDiff = abs($player->latitude - $latitude);
+    	
+    	$squareDistance = sqrt(($longitudeDiff * $longitudeDiff) + ($latitudeDiff * $latitudeDiff));
+    	$timeDistance = floor($squareDistance * 60);
+    	$minutes = floor($timeDistance / 60);
+    	$seconds = $timeDistance % 60;
+    	
+    	$message = "Er du sikker på at du ønsker å flytte deg til rute ($longitude, $latitude)?<br>";
+    	$message.= "Reisen vil ta ";
+    	if($minutes > 0) {
+    		$message.= "$minutes minutt";
+    		if($minutes > 1) {
+    			$message.= "er";
+    		}
+    	}
+    	if($minutes > 0 && $seconds > 0) {
+    		$message.= " og ";
+    	}
+    	if($seconds > 0) {
+    		$message.= "$seconds sekund";
+    		if($seconds > 1) {
+    			$message.= "er";
+    		}
+    	}
+    	$message.= " å gjennomføre.<br>";
+    	$message.= "Klikk på ruten på nytt for å starte forlytningen dit.";
+    	
+    	$view = new ViewModel(array_merge(
+    			$this->indexAction(true),
+    			array('message' => $message)
+    	));
+    		
+    	// Re-render map
+    	$view->setTemplate('game/map/index');
+    	return $view;
+    }
+    
     public function moveplayerAction() {
     	// Get coordinates from request
     	$longitude = $this->params()->fromRoute('longitude', false);
     	$latitude = $this->params()->fromRoute('latitude', false);
     	
     	if($longitude && $latitude) {
+    		$player = $this->getPlayerTable()->getPlayer($this->playerId);
+	    	
+	    	// Calculate travel time
+	    	$longitudeDiff = abs($player->longitude - $longitude);
+	    	$latitudeDiff = abs($player->latitude - $latitude);
+	    	 
+	    	$squareDistance = sqrt(($longitudeDiff * $longitudeDiff) + ($latitudeDiff * $latitudeDiff));
+	    	$timeDistance = floor($squareDistance * 60);
+	    	
+	    	// Set player action and actions blocked
+	    	$player = $this->getPlayerTable()->getPlayer($this->playerId);
+	    	$player->extendActionsBlockedTime($timeDistance);
+	    	$player->action = 'traveling';
+	    	
 	    	// Move player
-	    	$this->getPlayerTable()->movePlayer($longitude, $latitude);
+	    	$player->longitude = $longitude;
+	    	$player->latitude = $latitude;
+	    	
+	    	// Persist to DB
+	    	$player->save();
     	}
     	
     	// Redirect to map
     	return $this->redirect()->toRoute('game/map');
     }
-
+	
+    public function squareAction() {
+    	$longitude = $this->longitude = $this->params()->fromRoute('longitude', false);
+    	$latitude = $this->latitude = $this->params()->fromRoute('latitude', false);
+    	
+    	if(! $longitude && ! $latitude) {
+    		// Get the players coordinates
+    		$player = $this->getPlayerTable()->getPlayer($this->playerId);
+    		$longitude = $player->longitude;
+    		$latitude = $player->latitude;
+    	}
+    	
+    	$mapSquare = $this->getMapTable()->getMapSquare($longitude, $latitude);
+    	$squareType = $mapSquare->type;
+    	
+    	// Redirect to the correct controller
+    	switch($squareType) {
+    		case 'forest':
+    			$controller = 'forest';
+    	}
+    	
+    	return $this->redirect()->toRoute('game', array(
+    		'controller' => $controller,
+    		'longitude' => $longitude,
+    		'latitude' => $latitude
+    	));
+    }
+    
+    
     private function getCenteredLongitude($longitude, $mapPartHeight, $mapHeight) {
     	// Center map at the position, but not outside the map edges
     	$long = $longitude - (($mapPartHeight - 1) / 2);
@@ -162,30 +294,6 @@ class MapController extends AbstractActionController {
     	}
     	
     	return $lati;
-    }
-    
-    private function getMapTable() {
-    	if (!$this->mapTable) {
-    		$serviceManager = $this->getServiceLocator();
-    		$this->mapTable = $serviceManager->get('Game\Model\MapTable');
-    	}
-    	return $this->mapTable;
-    }
-    
-    private function getPlayerTable() {
-    	if (!$this->playerTable) {
-    		$serviceManager = $this->getServiceLocator();
-    		$this->playerTable = $serviceManager->get('Game\Model\PlayerTable');
-    	}
-    	return $this->playerTable;
-    }
-
-    private function getTownTable() {
-    	if (!$this->townTable) {
-    		$serviceManager = $this->getServiceLocator();
-    		$this->townTable = $serviceManager->get('Town\Model\TownTable');
-    	}
-    	return $this->townTable;
     }
 }
 

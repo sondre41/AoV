@@ -1,0 +1,12 @@
+<h2>Meldinger - Les melding</h2>
+
+<?php
+
+echo "<h3>" . $this->message->topic . "</h3>";
+echo "Fra: " . $this->sender->username . "<br>";
+echo "<h4>Meldingsinnhold</h4>";
+echo nl2br($this->message->content);
+
+?>
+
+<br><br><br><a href='<?php echo $this->url('message'); ?>'>Tilbake</a>

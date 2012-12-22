@@ -7,8 +7,22 @@ if($this->message) {
 	echo "<div class='message'>" . $this->message . "</div>";
 }
 
+
+if($this->townHasStorage) {
+
 ?>
 
+<h4>Resurser i landsbyen</h4>
+Tømmerstokker: <?php echo $this->townNrOfLog; ?><br>
+Plank: <?php echo $this->townNrOfLumber; ?>
+
+<?php
+
+}
+
+?>
+
+<h4>Resurser i din inventar</h4>
 Tømmerstokker: <?php echo $this->nrOfLog; ?><br>
 Plank: <?php echo $this->nrOfLumber; ?>
 
@@ -16,17 +30,40 @@ Plank: <?php echo $this->nrOfLumber; ?>
 
 <?php
 
-if($this->nrOfLog > 0) {
-	$cutFormAction = $this->url('town', array(
+$cutFormAction = $this->url('town', array(
 		'controller' => 'saw-buck',
 		'action' => 'cut',
 		'longitude' => $this->longitude,
 		'latitude' => $this->latitude
-	));
+));
+
+if($this->townHasStorage) {
+	echo "<h4>Fra landsbyen</h4>";
+	
+	if($this->townNrOfLog > 0) {
 
 ?>
 
 <form action='<?php echo $cutFormAction; ?>' method='POST'>
+<input type='hidden' name='resourceContainer' value='storage'>
+<input type='submit' value='Skjær tømmer'>
+</form>
+
+<?php
+
+	} else {
+		echo "Det finnes ingen tømmerstokker i landsbyen som kan sages.";
+	}
+}
+
+if($this->nrOfLog > 0) {
+
+?>
+
+<h4>Fra din inventar</h4>
+
+<form action='<?php echo $cutFormAction; ?>' method='POST'>
+<input type='hidden' name='resourceContainer' value='inventory'>
 <input type='submit' value='Skjær tømmer'>
 </form>
 
@@ -36,6 +73,8 @@ if($this->nrOfLog > 0) {
 	echo "Du har ingen tømmerstokker i din inventar som kan sages.";
 }
 
+
+// Back to town anchor
 $backUrl = $this->url('town', array(
 	'longitude' => $this->longitude,
 	'latitude' => $this->latitude

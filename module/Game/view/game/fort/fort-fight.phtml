@@ -1,0 +1,177 @@
+<h2>Fortkamp</h2>
+
+<?php
+
+if(count($this->flashMessages)) {
+	foreach($this->flashMessages as $message) {
+		echo "<div class='message'>" . $message . "</div>\n";
+	}
+}
+
+?>
+
+<h3>Info</h3>
+<b>Fort som angripes</b>:
+<ul>
+	<li><i>Posisjon</i>: [<?php echo $this->fort->longitude; ?>, <?php echo $this->fort->latitude; ?>]</li>
+	<li><i>Størrelse</i>: <?php echo $this->fort->size; ?></li>
+</ul>
+<b>Klan som angriper</b>: <?php echo $this->fortFight->name; ?><br>
+<b>Klan som har kontroll (forsvarer)</b>: 
+<?php
+
+if(! is_null($this->fort->name)) {
+	echo $this->fort->name;
+} else {
+	echo "Ingen.";
+}
+
+?><br>
+
+<b>Kamptidspunkt</b>: 
+<?php
+
+// Check whether or not the required amount of players in the attacking guild has accepted their invite
+$teamIsFull = false;
+if($this->displayOwnerSpecificInfo) {
+	// Check whether or not all fort fight spots has been taken
+	switch($this->fort->size) {
+		case 'small':
+			$nrOfPlayersNeeded = 3;
+			break;
+		case 'medium':
+			$nrOfPlayersNeeded = 6;
+			break;
+		case 'large':
+			$nrOfPlayersNeeded = 9;
+	}
+
+	$nrOfPlayersAccepted = 0;
+	foreach($this->fortFightInvitations as $invitation) {
+		if($invitation['status'] == 'accepted') {
+			$nrOfPlayersAccepted++;
+		}
+	}
+
+	if($nrOfPlayersAccepted == $nrOfPlayersNeeded) {
+		$teamIsFull = true;
+	}
+}
+
+// Display a form for setting the fort fight date and time
+if(is_null($this->fortFight->time) && $teamIsFull && $this->displayOwnerSpecificInfo) {
+	$initiateFortFightUrl = $this->url('fort', array(
+		'action' => 'initiate-fort-fight',
+		'id' => $this->fortFight->fortFightID
+	));
+	
+	echo "<a href='$initiateFortFightUrl'>Initsier fortkampen</a>";
+} else {
+	if(! is_null($this->fortFight->time)) {
+		echo $this->fortFight->time;
+	} else {
+		echo "Ikke satt.";
+	}
+}
+
+?>
+
+<br><br>
+
+<h3>Spillere</h3>
+
+<h4>Spillere som kan inviteres</h4>
+
+<?php
+
+// Find all players in the attacking guild that has not been invited to the fort fight
+$playersNotInvited = array();
+foreach($this->playersInGuild as $player) {
+	$playerInvited = false;
+	foreach($this->fortFightInvitations as $invitation) {
+		if($player['playerID'] == $invitation['playerID']) {
+			$playerInvited = true;
+			break;
+		}
+	}
+	
+	if(! $playerInvited) {
+		$playersNotInvited[] = $player;
+	}
+}
+
+
+// Print out all players that can be invited
+if(count($playersNotInvited)) {
+	echo "<ul>";
+	foreach($playersNotInvited as $player) {
+		echo "<li>";
+		echo $player['username'];
+		if($this->displayOwnerSpecificInfo && ! $teamIsFull) {
+			echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+			
+			$inviteUrl = $this->url('fort', array(
+				'action' => 'fort-fight-invite',
+				'id' => $this->fortFight->fortFightID,
+				'playerId' => $player['playerID']
+			));
+			
+			echo "<a href='$inviteUrl'>Inviter</a>";
+		}
+		echo "</li>";
+	}
+	echo "</ul>";
+} else {
+	echo "Ingen<br>";
+}
+
+?>
+
+<br>
+
+<h4>Invitasjoner</h4>
+
+<?php
+
+if(count($this->fortFightInvitations)) {
+	echo "<ul>";
+	foreach($this->fortFightInvitations as $invitation) {		
+		echo "<li>";
+		echo $invitation['username'] . ": " . $invitation['status'];
+		if(is_null($this->fortFight->time) && $invitation['playerID'] == $this->playerId) {
+			// Create form for changing status
+			$statusChangeUrl = $this->url('fort', array(
+				'action' => 'change-fort-fight-invite-status',
+				'id' => $invitation['fortFightID'],
+				'playerId' => $invitation['playerID']
+			));
+			
+			?>
+			
+			<form action='$statusChangeUrl' method='post'>
+				<input type='select' name='status'>
+					<option value='Open'>Åpen</option>
+					<option value='Accepted'>Akseptert</option>
+					<option value='Declined'>Avslått</option>
+			</form>
+			
+			<?php
+		}
+		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+		if(is_null($this->fortFight->time)) {
+			$deleteInvitationUrl = $this->url('fort', array(
+					'action' => 'delete-fort-fight-invite',
+					'id' => $invitation['fortFightID'],
+					'playerId' => $invitation['playerID']
+			));
+			
+			echo "<a href='$deleteInvitationUrl'>Slett</a>";
+		}
+		echo "</li>";
+	}
+	echo "</ul>";
+} else {
+	echo "Ingen";
+}
+
+?>

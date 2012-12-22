@@ -26,4 +26,12 @@ echo $this->formRow($form->get('password')) . "\n";
 echo $this->formRow($form->get('submit')) . "\n";
 echo $this->form()->closeTag($form);
 
+echo "<br>";
+
+$registerUrl = $this->url('application', array(
+	'controller' => 'register'
+));
+
 ?>
+
+<a href='<?php echo $registerUrl; ?>'>Registrer bruker</a>

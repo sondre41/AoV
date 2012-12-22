@@ -1,0 +1,13 @@
+<h2>Logg ut</h2>
+
+Utloggingen var vellykket.<br><br><br>
+
+<?php
+
+$registerUrl = $this->url('application', array(
+		'controller' => 'auth'
+));
+
+?>
+
+<a href='<?php echo $registerUrl; ?>'>Logg inn</a>

@@ -1,0 +1,56 @@
+<h2>Meldinger</h2>
+
+<?php
+
+if(count($this->flashMessages)) {
+	foreach($this->flashMessages as $message) {
+		echo "<div class='message'>" . $message . "</div>\n";
+	}
+}
+
+?>
+
+<h3>Send melding</h3>
+
+<?php
+
+$sendMessageUrl = $this->url('message', array(
+	'action' => 'send'
+));
+
+echo "<a href='$sendMessageUrl'>Send melding</a>";
+
+?>
+
+<br><br>
+
+<h3>Innboks</h3>
+<ul>
+
+<?php
+
+foreach($this->messages as $message) {
+	echo "<li>";
+	
+	// Read anchor
+	$readUrl = $this->url('message', array(
+		'action' => 'read',
+		'id' => $message->messageID
+	));
+	echo "<a href='$readUrl'>$message->topic</a>";
+	
+	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+	
+	// Delete anchor
+	$deleteUrl = $this->url('message', array(
+		'action' => 'delete',
+		'id' => $message->messageID
+	));
+	echo "<a href='$deleteUrl'>Slett</a>";
+	
+	echo "</li>";
+}
+
+?>
+
+</ul>

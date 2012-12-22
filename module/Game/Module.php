@@ -3,29 +3,24 @@
 namespace Game;
 
 use Game\Model\CityTable;
+use Game\Model\FortModel;
+use Game\Model\GuildModel;
 use Game\Model\InventoryModel;
 use Game\Model\InventoryTable;
 use Game\Model\ItemTable;
 use Game\Model\MapTable;
+use Game\Model\MessageModel;
 use Game\Model\PlayerModel;
 use Game\Model\PlayerTable;
+use Game\Model\QuestModel;
 
 // Zend
+use Zend\Db\TableGateway\TableGateway;
 use Zend\ModuleManager\ModuleManager;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 
-class Module
-{
-// 	public function init(ModuleManager $moduleManager)
-// 	{
-// 		$sharedEvents = $moduleManager->getEventManager()->getSharedManager();
-// 		$sharedEvents->attach('__NAMESPACE__', '*', function($e) {
-// 			// This event will only be fired when an ActionController under the MyModule namespace is dispatched.
-// 			echo "Init dispatch event<br>";
-// 		}, -100);
-// 	}
-	
+class Module {
     public function getConfig()
     {
         return include __DIR__ . '/config/module.config.php';
@@ -45,59 +40,85 @@ class Module
     public function getServiceConfig() {
     	return array(
     		'factories' => array(
-    			'Game\Model\MapTable' => function($serviceManager) {
+    			// Models
+    			// City Table
+    			'Game\Model\CityTable' => function($serviceManager) {
     				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
     				
-    				return new MapTable($databaseAdapter);
+    				return new CityTable($databaseAdapter);
     			},
-    			'Game\Model\PlayerTable' => function($serviceManager) {
+    			
+    			// Fort Model
+    			'Game\Model\FortModel' => function($serviceManager) {
     				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
     				
-    				return new PlayerTable($databaseAdapter);
+    				$fortTableGateway = new TableGateway('fort', $databaseAdapter);
+    				$fortFightTableGateway = new TableGateway('fortfight', $databaseAdapter);
+    				$fortFightInvitationTableGateway = new TableGateway('fortfightinvitation', $databaseAdapter);
+    			
+    				return new FortModel($databaseAdapter, $fortTableGateway, $fortFightTableGateway,  $fortFightInvitationTableGateway);
     			},
-    			'Game\Model\ItemTable' => function($serviceManager) {
+    				
+    			// Guild Model
+    			'Game\Model\GuildModel' => function($serviceManager) {
     				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
     				
-    				return new ItemTable($databaseAdapter);
-    			},
-    			'Game\Model\InventoryTable' => function($serviceManager) {
-    				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+    				$guildInvitationTableGateway = new TableGateway('guildinvitation', $databaseAdapter);
+    				$guildTableGateway = new TableGateway('guild', $databaseAdapter);
     				
-    				return new InventoryTable($databaseAdapter);
+    				return new GuildModel($databaseAdapter, $guildInvitationTableGateway, $guildTableGateway);
     			},
+    			
+    			// Inventory Model
     			'Game\Model\InventoryModel' => function($serviceManager) {
 	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
 	    			
 	    			return new InventoryModel($databaseAdapter, $serviceManager);
     			},
-    			'Game\Model\CityTable' => function($serviceManager) {
+    			
+    			// Inventory Table
+    			'Game\Model\InventoryTable' => function($serviceManager) {
 	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
 	    			
-	    			return new CityTable($databaseAdapter);
-    			}
-    		)
-    	);
-    }
-    
-    public function getControllerConfig() {
-    	return array(
-    		'factories' => array(
-    			'Game\Controller\Mapsquare' => function($controllerManager) {
-	    			$serviceManager = $controllerManager->getServiceLocator();
-	    			$eventManager = $serviceManager->get('EventManager');
-	    			$controller = new Controller\MapsquareController();
+	    			return new InventoryTable($databaseAdapter);
+    			},
+    			
+    			// Item Table
+	    			'Game\Model\ItemTable' => function($serviceManager) {
+	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
 	    			
-	    			echo "WTFFFFFF!";
+	    			return new ItemTable($databaseAdapter);
+    			},
+    			
+    			// Map Table
+    			'Game\Model\MapTable' => function($serviceManager) {
+    				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+    				
+    				return new MapTable($databaseAdapter);
+    			},
+    			
+    			// Message Model
+    			'Game\Model\MessageModel' => function($serviceManager) {
+	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+	    			$messageTableGateway = new TableGateway('message', $databaseAdapter);
 	    			
-	    			$eventManager->attach('dispatch', function ($e) use ($controller) {
-	    				echo "hei";
-	    			}, 100); // execute before executing action logic
-	    			
-	    			echo "shallabais";
-	    			
-	    			$controller->setEventManager($eventManager);
-	    			
-	    			return $controller;
+	    			return new MessageModel($databaseAdapter, $messageTableGateway);
+    			},
+    			
+    			// Player Table
+    			'Game\Model\PlayerTable' => function($serviceManager) {
+    				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+    				
+    				return new PlayerTable($databaseAdapter);
+    			},
+    			    			
+    			// Quest Model
+    			'Game\Model\QuestModel' => function($serviceManager) {
+	    			$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+	    			$questTableGateway = new TableGateway('quest', $databaseAdapter);
+	    			$playerQuestTableGateway = new TableGateway('playerquest', $databaseAdapter);
+	    				
+	    			return new QuestModel($databaseAdapter, $questTableGateway, $playerQuestTableGateway, $serviceManager);
     			}
     		)
     	);

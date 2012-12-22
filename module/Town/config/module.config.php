@@ -25,10 +25,11 @@ return array(
     'controllers' => array(
         'invokables' => array(
             'Town\Controller\Index' => 'Town\Controller\IndexController',
-            'Town\Controller\Resourcestorage' => 'Town\Controller\ResourcestorageController',
-            'Town\Controller\Itemstorage' => 'Town\Controller\ItemstorageController',
+            'Town\Controller\ResourceStorage' => 'Town\Controller\ResourceStorageController',
+            'Town\Controller\ItemStorage' => 'Town\Controller\ItemStorageController',
             'Town\Controller\SawBuck' => 'Town\Controller\SawBuckController',
-            'Town\Controller\IronMeltingWorks' => 'Town\Controller\IronMeltingWorksController'
+            'Town\Controller\IronMeltingWorks' => 'Town\Controller\IronMeltingWorksController',
+            'Town\Controller\Blacksmith' => 'Town\Controller\BlacksmithController'
         ),
     ),
     'view_manager' => array(

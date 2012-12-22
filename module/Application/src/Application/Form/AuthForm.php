@@ -8,7 +8,7 @@ class AuthForm extends Form {
 	public function __construct() {
 		parent::__construct('auth');
 		
-		$this->setAttribute('method', 'post');
+		$this->setAttribute('method', 'POST');
 		
 		// Username
 		$this->add(array(

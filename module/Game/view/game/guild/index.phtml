@@ -1,0 +1,124 @@
+<h2>Klan</h2>
+
+<?php
+
+// Print messages
+if(count($this->flashMessages)) {
+	foreach($this->flashMessages as $message) {
+		echo "<div class='message'>" . $message . "</div>\n";
+	}
+}
+
+
+if(! is_null($this->guildInfo)) {
+	echo "<h3>Info</h3>";
+	
+	echo "<b>Navn:</b> " . $this->guildInfo->name . "<br>";
+	echo "<b>Eier:</b> " . $this->guildInfo->username . "<br>";
+	echo "<b>Beskrivelse:</b><br>" . nl2br($this->guildInfo->description);
+	
+	echo "<br>";
+	
+	if($this->playerHasOwnerRights) {
+		// Create "edit guild info" anchor
+		$editUrl = $this->url('guild', array(
+			'action' => 'edit',
+			'id' => $this->guildInfo->guildID
+		));
+		echo "<br><a href='$editUrl'>Endre informasjon om klanen</a>";
+		
+		// Create "invite player to guild" anchor
+		$inviteUrl = $this->url('guild', array(
+			'action' => 'invite',
+			'id' => $this->guildInfo->guildID
+		));
+		echo "<br><a href='$inviteUrl'>Inviter spiller til klanen</a>";
+	}
+	
+	// Leave/Delete the guild anchor
+	$leaveUrl = $this->url('guild', array(
+		'action' => 'leave'
+	));
+	
+	echo "<br><a href='$leaveUrl'>";
+	if($this->playerHasOwnerRights) {
+		echo "Slett klanen";
+	} else {
+		echo "Forlat klanen";
+	}
+	echo "</a>";
+	
+	echo "<h3>Medlemmer</h3>";
+	
+	echo "<ul>";
+	foreach($this->playersInGuild as $player) {
+		echo "<li>";
+		echo $player->username;
+		echo "</li>";
+	}
+	echo "</ul>";
+} else {
+	echo "Du er ikke medlem av noen klan.<br><br>";
+	
+	echo "<h3>Opprett klan</h3>";
+	
+	$createGuildUrl = $this->url('game', array(
+		'controller' => 'guild',
+		'action' => 'create'
+	));
+	
+	echo "<a href='" . $createGuildUrl . "'>Opprett klan</a>";
+}
+
+?>
+
+<br><br><h3>Invitasjoner</h3>
+
+<?php
+
+// Guild invitations
+if(count($this->guildInvitations)) {
+	echo "<ul>";
+	
+	foreach($this->guildInvitations as $guildInvitation) {
+		echo "<li>";
+		
+		// View anchor
+		$viewGuildUrl = $this->url('guild', array(
+			'action' => 'view',
+			'id' => $guildInvitation->guildID
+		));
+		
+		echo "<a href='$viewGuildUrl'>$guildInvitation->name</a>";
+		
+		// Accept anchor
+		if(is_null($this->guildInfo)) {
+			echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+			
+			$acceptInvitationUrl = $this->url('guild', array(
+				'action' => 'accept-invitation',
+				'id' => $guildInvitation->guildID
+			));
+			
+			echo "<a href='$acceptInvitationUrl'>Godta</a>";
+		}
+		
+		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+		
+		// Delete anchor
+		$deleteInvitationUrl = $this->url('guild', array(
+			'action' => 'delete-invitation',
+			'id' => $guildInvitation->guildID
+		));
+		
+		echo "<a href='$deleteInvitationUrl'>Avslå</a>";
+		
+		echo "</li>";
+	}
+	
+	echo "</ul>";
+} else {
+	echo "Du har ikke mottatt noen invitasjoner.";
+}
+
+?>

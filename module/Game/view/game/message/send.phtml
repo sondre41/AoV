@@ -1,0 +1,22 @@
+<h2>Meldinger - Send melding</h2>
+
+<?php
+
+$form = $this->form;
+$form->setAttribute('action', $this->url(
+	'message', array(
+		'action' => 'send'
+	)
+));
+$form->prepare();
+
+echo $this->form()->openTag($form) . "\n";
+echo $this->formRow($form->get('recipient')) . "\n";
+echo $this->formRow($form->get('topic')) . "\n";
+echo $this->formRow($form->get('content')) . "\n";
+echo $this->formRow($form->get('submit')) . "\n";
+echo $this->form()->closeTag($form);
+
+?>
+
+<br><a href='<?php echo $this->url('message'); ?>'>Tilbake</a>

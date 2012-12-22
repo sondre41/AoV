@@ -1,0 +1,21 @@
+<h2>Oppdrag</h2>
+
+<?php
+
+echo "<h3>Aktive oppdrag</h3>";
+
+$lastQuestTimeCompleted = null;
+foreach($this->quests as $quest) {
+	if(is_null($lastQuestTimeCompleted) && !is_null($quest->timeCompleted)) {
+		echo "<h3>Utførte oppdrag</h3>";
+	}
+	
+	echo "<div>";
+	echo "<h5>" . $quest->title . "</h5>";
+	echo $quest->description;
+	echo "</div><br>";
+	
+	$lastQuestTimeCompleted = $quest->timeCompleted;
+}
+
+?>

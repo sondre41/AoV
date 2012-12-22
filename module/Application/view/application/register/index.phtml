@@ -1,0 +1,31 @@
+<h2>Registrer spiller</h2>
+
+<?php
+
+$form = $this->form;
+$form->setAttribute('action', $this->url(
+		'application',
+		array(
+			'controller' => 'register',
+			'action' => 'register'
+		)
+));
+$form->prepare();
+
+if($this->errorMessages) {
+	echo "<div class='errorMessage'>";
+	foreach($this->errorMessages as $message) {
+		echo $message . "<br>\n";
+	}
+	echo "</div>";
+}
+
+echo $this->form()->openTag($form) . "\n";
+echo $this->formRow($form->get('email')) . "\n";
+echo $this->formRow($form->get('username')) . "\n";
+echo $this->formRow($form->get('password')) . "\n";
+echo $this->formRow($form->get('passwordTwo')) . "\n";
+echo $this->formRow($form->get('submit')) . "\n";
+echo $this->form()->closeTag($form);
+
+?>

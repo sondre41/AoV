@@ -1,0 +1,21 @@
+<h2>Klan - <?php echo $this->guildInfo->name; ?></h2>
+
+<?php
+
+echo "<h3>Info</h3>";
+
+echo "<b>Navn:</b> " . $this->guildInfo->name . "<br>";
+echo "<b>Eier:</b> " . $this->guildInfo->username . "<br>";
+echo "<b>Beskrivelse:</b><br>" . nl2br($this->guildInfo->description);
+
+echo "<h3>Medlemmer</h3>";
+
+echo "<ul>";
+foreach($this->playersInGuild as $player) {
+	echo "<li>";
+	echo $player->username;
+	echo "</li>";
+}
+echo "</ul>";
+
+?>

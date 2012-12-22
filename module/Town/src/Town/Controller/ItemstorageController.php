@@ -4,7 +4,7 @@ namespace Town\Controller;
 
 use Zend\View\Model\ViewModel;
 
-class ItemstorageController extends BuildingController {
+class ItemStorageController extends BuildingController {
 	protected $buildingType = 'item storage';
 	
 	public function indexAction() {
@@ -26,7 +26,7 @@ class ItemstorageController extends BuildingController {
 		if(!$inventoryID) {
 			// No item chosen, redirect to town inventory index
 			return $this->redirect()->toRoute('town', array(
-					'controller' => 'itemstorage',
+					'controller' => 'item-storage',
 					'longitude' => $this->longitude,
 					'latitude' => $this->latitude
 			));
@@ -52,7 +52,7 @@ class ItemstorageController extends BuildingController {
 		}
 	
 		// Re-render inventory
-		$view->setTemplate('town/itemstorage/index');
+		$view->setTemplate('town/item-storage/index');
 		return $view;
 	}
 	
@@ -62,7 +62,7 @@ class ItemstorageController extends BuildingController {
 		if(!$townInventoryID) {
 			// No item chosen, redirect to town inventory index
 			return $this->redirect()->toRoute('town', array(
-					'controller' => 'itemstorage',
+					'controller' => 'item-storage',
 					'longitude' => $this->longitude,
 					'latitude' => $this->latitude
 			));
@@ -89,7 +89,7 @@ class ItemstorageController extends BuildingController {
 		}
 	
 		// Re-render inventory
-		$view->setTemplate('town/itemstorage/index');
+		$view->setTemplate('town/item-storage/index');
 		return $view;
 	}
 }

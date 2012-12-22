@@ -1,0 +1,60 @@
+<h2>Smed</h2>
+
+<?php
+
+// Print eventual message
+if($this->message) {
+	echo "<div class='message'>" . $this->message . "</div>";
+}
+
+?>
+
+<h4>Resurser i din inventar</h4>
+Jern: <?php echo $this->nrOfIron; ?>
+
+<br><br>
+
+<h4>Oppskrifter</h4>
+
+<?php
+
+$formAction = $this->url('town', array(
+	'controller' => 'blacksmith',
+	'action' => 'forge',
+	'longitude' => $this->longitude,
+	'latitude' => $this->latitude
+));
+
+?>
+
+<form action='<?php echo $formAction; ?>' method='POST'>
+
+<?php
+
+foreach($this->recipes as $recipe) {
+	if($this->nrOfIron >= $recipe->iron) {
+		echo "<input type='radio' name='recipe' value='$recipe->recipeID'>";
+	}
+	echo ucfirst($recipe->name);
+	echo ", Jern som trengs: " . $recipe->iron;
+	echo '<br/>';
+}
+
+?>
+
+<input type='submit' name='forgeSubmit' value='Smi valgt oppskrift'>
+
+</form>
+
+
+<?php
+
+// Back to town anchor
+$backUrl = $this->url('town', array(
+	'longitude' => $this->longitude,
+	'latitude' => $this->latitude
+));
+
+?>
+
+<br><br><a href='<?php echo $backUrl; ?>'>Tilbake til landsby</a>

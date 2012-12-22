@@ -2,68 +2,59 @@
 
 namespace Game\Controller;
 
-use Zend\Mvc\MvcEvent;
+use Zend\EventManager\EventManagerInterface;
+use Zend\View\Model\ViewModel;
 
-use Zend\EventManager\EventManagerAwareInterface;
-
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\ServiceManager\ServiceManager;
-use Zend\ServiceManager\ServiceLocatorInterface;
-
-class MapsquareController extends AbstractActionController {
-	protected $playerTable;
+class MapSquareController extends GameController {
+	protected $type;
+	protected $longitude;
+	protected $latitude;
+	protected $alwaysViewable = false;
+	protected $isPlayerOnSquare = false;
 	
-	public function __construct() {
-		$this->getEventManager()->attach('*', array($this, 'preDispatch'), 1000);
-		echo "construct";
-	}
-	
-	public function preDispatch() {
-		echo "This is preDispatch()!";
-	}
-	
-// 	protected function attachDefaultListeners() {
-// 		parent::attachDefaultListeners();
+	public function setEventManager(EventManagerInterface $eventManager) {
+		parent::setEventManager($eventManager);
+			
+		// Attach init method to be run before controller action
+		$eventManager->attach('dispatch', array($this, 'init'), 100);
 		
-// 		// Get longitude and latitude from request
-// 		$longitude = (int) $this->params()->fromRoute('longitude', 0);
-// 		$latitude = (int) $this->params()->fromRoute('latitude', 0);
-		 
-// 		if(!$longitude || !$latitude) {
-// 			// Redirect to map controller
-// 			return $this->redirect()->toRoute('game', array(
-// 					'controller' => 'map'
-// 			));
-// 		}
-// 	}
-	
-	// Class initialization
-// 	public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-// 	{
-// 		parent::setServiceLocator($serviceLocator);
-		
-// 		// Get longitude and latitude from request
-// 		$longitude = (int) $this->params()->fromRoute('longitude', 0);
-//     	$latitude = (int) $this->params()->fromRoute('latitude', 0);
-    	
-//     	if(!$longitude || !$latitude) {
-//     		// Redirect to map controller
-//     		return $this->redirect()->toRoute('game', array(
-//     				'controller' => 'map'
-//     		));
-//     	}
-// 	}
-
-	public function indexAction() {
-		echo "index";
+		// Attach view model (action result) modification method to be run after controller action
+		$eventManager->attach('dispatch', array($this, 'setViewVariables'), -100);
 	}
 	
-	private function getPlayerTable() {
-		if (!$this->playerTable) {
-			$serviceManager = $this->getServiceLocator();
-			$this->playerTable = $serviceManager->get('Game\Model\PlayerTable');
+	public function init() {
+		parent::init();
+		
+		// Check whether or not coordinates are set
+		$longitude = $this->longitude = $this->params()->fromRoute('longitude', false);
+		$latitude = $this->latitude = $this->params()->fromRoute('latitude', false);
+		
+		if(! $longitude && ! $latitude) {
+			// Coordinates not set. Get coordinates from player.
+			return $this->redirect()->toRoute('game');
 		}
-		return $this->playerTable;
+		
+		$mapSquare = $this->getMapTable()->getMapSquare($longitude, $latitude);
+		
+		// Check if the requested map square is actually handled by the requested controller (a child of this)
+		if($mapSquare->type != $this->type) {
+			return $this->redirect()->toRoute('game');
+		}
+		
+		$player = $this->player = $this->getPlayerTable()->getPlayer($this->playerId);
+		
+		// Check if the player is placed on the requested map square
+		if($player->longitude == $mapSquare->longitude && $player->latitude = $mapSquare->latitude) {
+			$this->isPlayerOnSquare = true;
+		}
+	}
+	
+	public function setViewVariables() {
+		// Get the view model
+		$viewModel = $this->getEvent()->getResult();
+		 
+		// Set variable for whether or not the player is currently at this specific map square
+		$viewModel->setVariable('isPlayerOnSquare', $this->isPlayerOnSquare);
 	}
 }
 

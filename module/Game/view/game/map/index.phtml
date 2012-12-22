@@ -7,6 +7,11 @@ if(isset($this->message)) {
 	echo "<div class='message'>" . $this->message . "</div>";
 }
 
+// Print eventual travel notice
+if($this->playerIsTraveling) {
+	echo "<div class='notice'>" . $this->travelNotice . "</div>";
+}
+
 ?>
 
 <table class="mapTable">
@@ -16,21 +21,21 @@ if(isset($this->message)) {
 						'controller' => 'map',
 						'action' => 'index',
 						'longitude' => $this->centerLongitude,
-						'latitude' => $this->centerLatitude - 1)); ?>">Venstre</a>
+						'latitude' => $this->centerLatitude - 1)); ?>">Vest</a>
 </td>
 <td colspan="<?php echo $this->mapWidth; ?>" class="navigation">
 <a href="<?php echo $this->url('game', array(
 						'controller' => 'map',
 						'action' => 'index',
 						'longitude' => $this->centerLongitude - 1,
-						'latitude' => $this->centerLatitude)); ?>">Opp</a>
+						'latitude' => $this->centerLatitude)); ?>">Nord</a>
 </td>
 <td rowspan="<?php echo ($this->mapHeight + 2); ?>" class="navigation">
 <a href="<?php echo $this->url('game', array(
 						'controller' => 'map',
 						'action' => 'index',
 						'longitude' => $this->centerLongitude,
-						'latitude' => $this->centerLatitude + 1)); ?>">Høyre</a>
+						'latitude' => $this->centerLatitude + 1)); ?>">Øst</a>
 </td>
 </tr>
 
@@ -49,26 +54,85 @@ foreach($this->mapSquares as $square) {
 	}
 	echo "'>";
 	
-	$isPlayerAtCurrentPosition = false;
+	$playerAtSquare = false;
+	if($this->playerLongitude == $square->longitude &&
+	   $this->playerLatitude == $square->latitude) {
+		$playerAtSquare = true;
+	}
+	
+	$otherPlayersAtSquare = false;
 	for($i = 0; $i < count($this->players); $i++) {
 		if($this->players[$i]['longitude'] == $square->longitude &&
-		   $this->players[$i]['latitude'] == $square->latitude) {
-			$isPlayerAtCurrentPosition = true;
+		   $this->players[$i]['latitude'] == $square->latitude &&
+		   $this->players[$i]['playerID'] != $this->playerID) {
+			$otherPlayersAtSquare = true;
 			break;
 		}
 	}
-	if($isPlayerAtCurrentPosition) {
-		// Print player image
-		echo "<img src='" . $this->basePath() . "/images/map/player.png" . "' />";
+	if($playerAtSquare) {
+		$class = '';
+		if($this->playerIsTraveling) {
+			$class = "class='traveling'";
+		} else {
+			$mapSquareUrl = $this->url('game', array(
+					'controller' => 'map',
+					'action' => 'square'
+			));
+				
+			echo "<a class='changePosition' href='$mapSquareUrl'>";
+		}
+		if(! $otherPlayersAtSquare) {
+			// Print player image
+			echo "<img $class src='" . $this->basePath() . "/images/map/player.png" . "' />";
+		} else {
+			// Print double player image
+			echo "<img $class src='" . $this->basePath() . "/images/map/player_both.png" . "' />";
+		}
+		if(! $this->playerIsTraveling) {
+			echo "</a>";
+		}
 	} else {
-		// Make "move to this position" anchor
-		echo "<a class='changePosition' href='";
-		echo $this->url('game', array(
+		if($this->moveToSquare &&
+		   $this->centerLongitude == $square->longitude &&
+		   $this->centerLatitude == $square->latitude) {
+			// Make "move to this position" anchor
+			echo "<a class='changePosition faded' href='";
+			echo $this->url('game', array(
+					'controller' => 'map',
+					'action' => 'moveplayer',
+					'longitude' => $square->longitude,
+					'latitude' => $square->latitude));
+			echo "'>";
+			if($otherPlayersAtSquare) {
+				// Print player enemy image
+				echo "<img src='" . $this->basePath() . "/images/map/player_both.png" . "' />";
+			} else {
+				// Print player image
+				echo "<img src='" . $this->basePath() . "/images/map/player.png" . "' />";
+			}
+			echo "</a>";
+		} else {
+			if(! $this->playerIsTraveling) {
+				// Make "ask me about moving to this position" anchor
+				echo "<a class='changePosition' href='";
+				echo $this->url('game', array(
 						'controller' => 'map',
-						'action' => 'moveplayer',
+						'action' => 'move',
 						'longitude' => $square->longitude,
 						'latitude' => $square->latitude));
-		echo "'></a>";
+				echo "'>";
+				if($otherPlayersAtSquare) {
+					// Print player enemy image
+					echo "<img src='" . $this->basePath() . "/images/map/player_enemy.png" . "' />";
+				}
+				echo "</a>";
+			} else {
+				if($otherPlayersAtSquare) {
+					// Print player enemy image
+					echo "<img src='" . $this->basePath() . "/images/map/player_enemy.png" . "' />";
+				}
+			}
+		}
 	}
 	echo "</td>\n";
 	$lastLongitude = $square->longitude;
@@ -82,7 +146,7 @@ foreach($this->mapSquares as $square) {
 						'controller' => 'map',
 						'action' => 'index',
 						'longitude' => $this->centerLongitude + 1,
-						'latitude' => $this->centerLatitude)); ?>">Ned</a>
+						'latitude' => $this->centerLatitude)); ?>">Sør</a>
 </td>
 </tr>
 
@@ -104,13 +168,3 @@ foreach($this->mapSquares as $square) {
 						'action' => 'establishtown',
 						'longitude' => $this->playerLongitude,
 						'latitude' => $this->playerLatitude)); ?>">Opprett landsby</a>
-
-<br />
-
-<a href="<?php echo $this->url('game', array(
-						'controller' => 'mapsquare')); ?>">Gå til rute</a>
-						
-<br />
-
-<a href="<?php echo $this->url('game', array(
-						'controller' => 'inventory')); ?>">Inventar</a>

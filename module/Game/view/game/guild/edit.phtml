@@ -1,0 +1,21 @@
+<h2>Klan - Endre Klan Info: <?php echo $this->guild->name; ?></h2>
+
+<?php
+
+$form = $this->form;
+$form->setAttribute('action', $this->url(
+		'guild', array(
+			'action' => 'edit',
+			'id' => $this->guildId
+		)
+));
+$form->prepare();
+
+echo $this->form()->openTag($form) . "\n";
+echo $this->formRow($form->get('description')) . "\n";
+echo $this->formRow($form->get('submit')) . "\n";
+echo $this->form()->closeTag($form);
+
+?>
+
+<br><a href='<?php echo $this->url('guild'); ?>'>Tilbake</a>

@@ -28,7 +28,7 @@ class InventoryModel {
 		// Build WHERE statement
 		$where = new Where();
 		$where->equalTo('inventoryID', $inventoryID)
-		->equalTo('playerID', $playerID);
+			  ->equalTo('playerID', $playerID);
 	
 		// Add WHERE to UPDATE
 		$update->where($where);
@@ -80,7 +80,7 @@ class InventoryModel {
 		// Build WHERE statement
 		$where = new Where();
 		$where->equalTo('bodySlot', $bodySlot)
-		->equalTo('playerID', $playerID);
+			  ->equalTo('playerID', $playerID);
 	
 		// Add WHERE to UPDATE
 		$update->where($where);

@@ -1,0 +1,26 @@
+<?php
+
+if($this->playerIsOwner) {
+	$action = "slett";
+} else {
+	$action = "forlat";
+}
+
+?>
+
+<h2>Klan - <?php echo ucfirst($action); ?> klan</h2>
+
+Er du sikker på at du ønsker å <?php echo $action . "e"; ?> klanen?<br /><br />
+
+<?php
+
+$formUrl = $this->url('guild', array(
+	'action' => 'leave'
+));
+
+?>
+
+<form action='<?php echo $formUrl; ?>' method='POST'>
+	<input type='submit' name='leaveGuild' value='No'>
+	<input type='submit' name='leaveGuild' value='Yes'>
+</form>

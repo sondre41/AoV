@@ -2,17 +2,11 @@
 
 namespace Game\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
-class InventoryController extends AbstractActionController {
-	protected $playerModel;
-	protected $playerTable;
-	protected $inventoryModel;
-	protected $inventoryTable;
-	
+class InventoryController extends GameController {
 	public function indexAction() {	
-		return array('inventoryItems' => $this->getInventoryModel()->getPlayerInventory(1)->toArray());
+		return array('inventoryItems' => $this->getInventoryModel()->getPlayerInventory($this->player->playerID)->toArray());
 	}
 	
 	public function deleteAction() {
@@ -24,7 +18,7 @@ class InventoryController extends AbstractActionController {
 			));
 		} else {
 			// Delete the item
-			$nrOfItemsDeleted = $this->getInventoryTable()->deleteItemForPlayer($inventoryID, 1);
+			$nrOfItemsDeleted = $this->getInventoryTable()->deleteItemForPlayer($inventoryID, $this->player->playerID);
 			
 			if($nrOfItemsDeleted == count($inventoryID)) {
 				// Give a message to the user about the successful deletion
@@ -55,7 +49,7 @@ class InventoryController extends AbstractActionController {
 		} else {
 			$inventoryID = $request->getPost()->inventoryID;
 			$hand = $request->getPost()->hand;
-			$activationSuccessful = $this->getInventoryModel()->activateItemForPlayer($inventoryID, 1, $hand);
+			$activationSuccessful = $this->getInventoryModel()->activateItemForPlayer($inventoryID, $this->player->playerID, $hand);
 			
 			if(!$activationSuccessful) {
 				// Suspicious behavior. The user has probably tampered with the html header.
@@ -86,7 +80,7 @@ class InventoryController extends AbstractActionController {
 			));
 		} else {
 			$bodySlot = $request->getPost()->bodySlot;
-			$deactivationSuccessful = $this->getInventoryModel()->deactivateBodySlotForPlayer($bodySlot, 1);
+			$deactivationSuccessful = $this->getInventoryModel()->deactivateBodySlotForPlayer($bodySlot, $this->player->playerID);
 				
 			if(!$deactivationSuccessful) {
 				// Suspicious behavior. The user has probably tampered with the html header.
@@ -106,38 +100,6 @@ class InventoryController extends AbstractActionController {
 			$view->setTemplate('game/inventory/index');
 			return $view;
 		}
-	}
-	
-	private function getPlayerModel() {
-		if (!$this->playerModel) {
-			$serviceManager = $this->getServiceLocator();
-			$this->playerModel = $serviceManager->get('Game\Model\PlayerModel');
-		}
-		return $this->playerModel;
-	}
-	
-	private function getPlayerTable() {
-		if (!$this->playerTable) {
-			$serviceManager = $this->getServiceLocator();
-			$this->playerTable = $serviceManager->get('Game\Model\PlayerTable');
-		}
-		return $this->playerTable;
-	}
-	
-	private function getInventoryModel() {
-		if (!$this->inventoryModel) {
-			$serviceManager = $this->getServiceLocator();
-			$this->inventoryModel = $serviceManager->get('Game\Model\InventoryModel');
-		}
-		return $this->inventoryModel;
-	}
-	
-	private function getInventoryTable() {
-		if (!$this->inventoryTable) {
-			$serviceManager = $this->getServiceLocator();
-			$this->inventoryTable = $serviceManager->get('Game\Model\InventoryTable');
-		}
-		return $this->inventoryTable;
 	}
 }
 

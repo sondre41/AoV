@@ -1,0 +1,49 @@
+<h2>Fort</h2>
+
+<h3>Fort</h3>
+<?php
+
+foreach($this->forts as $fort) {
+	echo "<b>ID</b>: " . $fort->fortID . "<br>";
+	echo "<b>Lengdegrad</b>: " . $fort->longitude . ", <b>Breddegrad</b>: " . $fort->latitude . "<br>";
+	echo "<b>Størrelse</b>: " . $fort->size . "<br>";
+	echo "<b>Klan med kontroll</b>: ";
+	if(! is_null($fort->guildInControl)) {
+		echo $fort->name . "', siden " . $fort->controlGained;
+	} else {
+		echo "Ingen klan har kontroll over dette fortet.";
+	}
+	echo "<br>";
+	
+	$fortFight = null;
+	foreach($this->fortFights as $fight) {
+		if($fight['fortID'] == $fort->fortID) {
+			$fortFight = $fight;
+			break;
+		}
+	}
+	
+	echo "<br><h4>Fortkamp</h4>";
+	
+	if(! is_null($fortFight)) {
+		echo "Din guild har en ventende fortkamp mot dette fortet.<br>";
+		
+		$fortFightUrl = $this->url('fort', array(
+			'action' => 'fort-fight',
+			'id' => $fortFight['fortFightID']
+		));
+		
+		echo "<a href='$fortFightUrl'>Se informasjon om fortkampen</a>";
+	} elseif($this->playerIsGuildOwner) {
+		$attackFortUrl = $this->url('fort', array(
+			'action' => 'attack',
+			'id' => $fort->fortID
+		));
+		
+		echo "<a href='$attackFortUrl'>Angrip dette fortet</a>";
+	}
+	
+	echo "<br><br><br>";
+}
+
+?>

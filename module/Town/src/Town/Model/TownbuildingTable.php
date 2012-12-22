@@ -217,7 +217,7 @@ class TownBuildingTable extends AbstractTableGateway {
 		// Make sub-WHERE statement to be able to OR two statements together
 		$resourceWhere = new Where(null, Where::COMBINED_BY_OR);
 		$resourceWhere->notEqualTo('lumberLeft', 0)
-		->notEqualTo('stoneLeft', 0);
+					  ->notEqualTo('stoneLeft', 0);
 		
 		$where->addPredicate($resourceWhere);
 		

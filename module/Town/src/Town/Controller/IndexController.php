@@ -2,10 +2,69 @@
 
 namespace Town\Controller;
 
-use Game\Controller\GameController;
+use Zend\EventManager\EventManagerInterface;
 use Zend\View\Model\ViewModel;
 
+use Game\Controller\GameController;
+
 class IndexController extends GameController {
+	protected $type = 'town';
+	protected $alwaysViewable = true;
+	protected $isPlayerOnSquare = false;
+	
+	public function setEventManager(EventManagerInterface $eventManager) {
+		parent::setEventManager($eventManager);
+			
+		// Attach init method to be run before controller action
+		$eventManager->attach('dispatch', array($this, 'init'), 100);
+		
+		// Attach view model (action result) modification method to be run after controller action
+		$eventManager->attach('dispatch', array($this, 'setViewVariables'), -100);
+	}
+	
+	public function init() {
+		parent::init();
+		
+		// Check whether or not coordinates are set
+		$longitude = $this->longitude = $this->params()->fromRoute('longitude', false);
+		$latitude = $this->latitude = $this->params()->fromRoute('latitude', false);
+		
+		if(! $longitude && ! $latitude) {
+			// If coordinates are not given, try to find the default town for this user
+			$town = $this->getTownTable()->getPlayersDefaultTown($this->player->playerID);
+			
+			// Set coordinates
+			if($town) {
+				$longitude = $town->longitude;
+				$latitude = $town->latitude;
+			} else {
+				throw new \Exception("No default town was set for this user.");
+			}
+		}
+		
+		$mapSquare = $this->getMapTable()->getMapSquare($longitude, $latitude);
+		
+		// Check if the requested map square is actually handled by the requested controller (a child of this)
+		if($mapSquare->type != $this->type) {
+			return $this->redirect()->toRoute('game');
+		}
+		
+		$player = $this->player = $this->getPlayerTable()->getPlayer($this->playerId);
+		
+		// Check if the player is placed on the requested map square
+		if($player->longitude == $mapSquare->longitude && $player->latitude = $mapSquare->latitude) {
+			$this->isPlayerOnSquare = true;
+		}
+	}
+	
+	public function setViewVariables() {
+		// Get the view model
+		$viewModel = $this->getEvent()->getResult();
+			
+		// Set variable for whether or not the player is currently at this specific map square
+		$viewModel->setVariable('isPlayerOnSquare', $this->isPlayerOnSquare);
+	}
+	
 	public function indexAction() {
 		// Get coordinates from the request
 		$longitude = $this->params()->fromRoute('longitude', false);
@@ -14,7 +73,7 @@ class IndexController extends GameController {
 		// Coordinates are required
 		if(!$longitude || !$latitude) {
 			// If coordinates are not given, try to find the default town for this user
-			$town = $this->getTownTable()->getPlayersDefaultTown(1);
+			$town = $this->getTownTable()->getPlayersDefaultTown($this->player->playerID);
 			
 			// Set coordinates
 			if($town) {
@@ -24,15 +83,15 @@ class IndexController extends GameController {
 		}
 		
 		// Get town statistics if not already gotten above
-		if(!isset($town)) {
+		if(! isset($town)) {
 			$town = $this->getTownTable()->getTown($longitude, $latitude);
 		}
-		if(!$town) {
+		if(! $town) {
 			return $this->redirect()->toRoute('game/map');
 		}
 		
 		// Get player inventory statistics
-		$inventory = $this->getInventoryModel()->getPlayerInventory(1);
+		$inventory = $this->getInventoryModel()->getPlayerInventory($this->player->playerID);
 
 		// Find out if this town has a Resource Storage built
 		$townHasStorage = $this->getTownBuildingTable()->townHasBuilding('resource storage', $town->townID);
@@ -58,8 +117,17 @@ class IndexController extends GameController {
 			return $this->redirect()->toRoute('game/map');
 		}
 		
-		// Get the submited build-with-resource-type value and the resource container value
 		$request = $this->getRequest();
+		if(!$request->isPost()) {
+			// Request must be POST
+			return $this->redirect()->toRoute('town', array(
+					'controller' => 'index',
+					'longitude' => $longitude,
+					'latitude' => $latitude
+			));
+		}
+		
+		// Get the submited build-with-resource-type value and the resource container value
 		$resourceType = strtolower($request->getPost()->buildSubmit);
 		$resourceContainer = $request->getPost()->resourceContainer;
 		
@@ -80,7 +148,7 @@ class IndexController extends GameController {
 			$this->getTownTable()->reduceAvailableResources($resourceType, $town->townID);
 		} else {
 			// Check if the player has a quantity of one or more of the submited resource type in his/her inventory
-			$inventory = $this->getInventoryModel()->getPlayerInventory(1)->toArray();
+			$inventory = $this->getInventoryModel()->getPlayerInventory($this->player->playerID)->toArray();
 			
 			$resourceValue = 0;
 			$lastResourceMatchInventoryID = false;
@@ -96,14 +164,14 @@ class IndexController extends GameController {
 			}
 			
 			// Delete a resource of the submited resource type from the players inventory
-			$this->getInventoryTable()->deleteItemForPlayer($lastResourceMatchInventoryID, 1);
+			$this->getInventoryTable()->deleteItemForPlayer($lastResourceMatchInventoryID, $this->player->playerID);
 		}
 		
 		// Reduce resources left of building for the current building project of the town
 		$this->getTownBuildingTable()->reduceResourceLeftForBuilding($resourceType, $town->townID);
 		
 		// Update players waiting time with 3 minutes
-		$player = $this->getPlayerTable()->getPlayer(1);
+		$player = $this->getPlayerTable()->getPlayer($this->player->playerID);
 		//$player->extendActionsBlockedTime(180);
 		
 		// Give message to the user
@@ -224,7 +292,7 @@ class IndexController extends GameController {
 		
 		if($request->isPost()) {
 			// Get answer on "Do you want to stop?" question
-			$answer = $request->getPost('stopBuild', 'No');
+			$answer = $request->getPost('stopBuild', 'no');
 			
 			if(strtolower($answer) == 'yes') {
 				// Stop the building project

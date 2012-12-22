@@ -2,6 +2,7 @@
 
 namespace Town;
 
+use Town\Model\RecipeModel;
 use Town\Model\TownBuildingTable;
 use Town\Model\TownInventoryModel;
 use Town\Model\TownTable;
@@ -36,6 +37,15 @@ class Module
     	return array(
     		'factories' => array(
     			// Models
+    			// RecipeModel
+    			'Town\Model\RecipeModel' => function($serviceManager) {
+    				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
+    				$recipeTableGateway = new TableGateway('recipe', $databaseAdapter);
+    				$playerRecipeTableGateway = new TableGateway('playerrecipe', $databaseAdapter);
+    				 
+    				return new RecipeModel($databaseAdapter, $recipeTableGateway, $playerRecipeTableGateway);
+    			},
+    			
     			// TownBuildingTable
     			'Town\Model\TownBuildingTable' => function($serviceManager) {
     				$databaseAdapter = $serviceManager->get('Zend\Db\Adapter\Adapter');
